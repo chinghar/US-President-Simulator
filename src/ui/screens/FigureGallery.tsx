@@ -2,7 +2,7 @@ import { FIGURES } from '../../data/figures';
 import { PRIOR_OFFICES } from '../../data/prior-offices';
 import { TRAITS } from '../../data/traits';
 import { STATES } from '../../data/states';
-import { useGameStore } from '../state/gameStore';
+import { useGameStore, type StartMode } from '../state/gameStore';
 import { Button, Tag } from '../kit';
 
 const PARTY_LABEL: Record<string, string> = { democrat: 'Democrat', republican: 'Republican', independent: 'Independent' };
@@ -12,7 +12,7 @@ function formatMoney(value: number): string {
   return `$${(value / 1_000_000).toFixed(1)}M`;
 }
 
-export function FigureGallery() {
+export function FigureGallery({ mode }: { mode: StartMode }) {
   const startFigureGame = useGameStore((s) => s.startFigureGame);
 
   return (
@@ -42,8 +42,8 @@ export function FigureGallery() {
               <dd className="text-right font-mono text-paper/80">{formatMoney(figure.warChest)}</dd>
             </dl>
           </div>
-          <Button className="mt-4 w-full" onClick={() => startFigureGame(figure)}>
-            Run as {figure.name.split(' ')[0]}
+          <Button className="mt-4 w-full" onClick={() => startFigureGame(figure, mode)}>
+            {mode === 'president' ? `Take office as ${figure.name.split(' ')[0]}` : `Run as ${figure.name.split(' ')[0]}`}
           </Button>
         </div>
       ))}

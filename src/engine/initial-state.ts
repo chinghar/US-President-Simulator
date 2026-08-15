@@ -1,6 +1,8 @@
 import { createInitialStakeholderStates } from '../data/stakeholders';
+import { dateToMonthIndex } from './date';
 import { createInitialEconomy } from './economy';
 import { createInitialGeneralState } from './general';
+import { createInitialGoverningState } from './governing';
 import { createInitialPrimaryState } from './primary';
 import { ISSUE_AXES, type AxisPositions, type GameDate, type GamePhase, type GameState, type PlayerCharacter } from './types';
 
@@ -59,5 +61,37 @@ export function createInitialGameState(options: CreateInitialGameStateOptions = 
     primary,
     general,
     governing: null,
+  };
+}
+
+/**
+ * Skips the primary and general campaigns entirely and drops the player
+ * straight into the Oval Office — same starting conditions (Congress
+ * composition, treasury, political capital, economy) a campaign winner
+ * would have on their first day, January of the election year. No VP: the
+ * VP's persona bonus is a general-election-only mechanic (see general.ts),
+ * so it has no governing-phase effect and there's nothing to pick.
+ */
+export function createInitialGoverningGameState(options: CreateInitialGameStateOptions = {}): GameState {
+  const player = createDefaultPlayer(options.player);
+  const positions = { ...neutralPositions(), ...options.positions };
+  const date: GameDate = options.startDate ?? { month: 1, year: 2029 };
+
+  return {
+    date,
+    monthIndex: dateToMonthIndex(date),
+    phase: 'governing',
+    rngState: options.seed ?? 1,
+    player,
+    positions,
+    economy: createInitialEconomy(),
+    treasury: 0,
+    politicalCapital: 50,
+    stakeholders: createInitialStakeholderStates(),
+    memory: [],
+    history: [],
+    primary: null,
+    general: null,
+    governing: createInitialGoverningState(),
   };
 }

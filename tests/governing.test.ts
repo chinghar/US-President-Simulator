@@ -4,9 +4,11 @@ import {
   createCustomPlayer,
   createInitialEconomy,
   createInitialGoverningState,
+  createInitialGoverningGameState,
   getPendingCrisisEvents,
 } from '../src/engine';
 import { createInitialStakeholderStates } from '../src/data/stakeholders';
+import { BALANCE } from '../src/data/balance';
 import { BILLS } from '../src/data/bills';
 import { EXECUTIVE_ORDERS } from '../src/data/executive-orders';
 import { EVENTS, assertEventsValidInDev } from '../src/data/events';
@@ -212,5 +214,51 @@ describe('full term', () => {
     // The trigger month hands off to either a primary challenge or the general.
     expect(state.phase === 'primary' || state.phase === 'general').toBe(true);
     expect(state.governing!.reelection).not.toBeNull();
+  });
+});
+
+describe('starting straight as president', () => {
+  it('skips the primary and general and lands in governing on day one', () => {
+    const player = createCustomPlayer({
+      name: 'Skip Ahead',
+      age: 50,
+      homeState: 'OH',
+      party: 'democrat',
+      priorOffice: 'senator',
+      traits: ['charismatic', 'fundraiser', 'debater'],
+    });
+    const state = createInitialGoverningGameState({ player, positions: neutralPositions() });
+
+    expect(state.phase).toBe('governing');
+    expect(state.primary).toBeNull();
+    expect(state.general).toBeNull();
+    expect(state.date).toEqual({ month: 1, year: 2029 });
+    expect(state.governing).not.toBeNull();
+    expect(state.governing!.congress).toEqual({
+      houseDem: BALANCE.governing.INITIAL_HOUSE_DEM,
+      houseRep: BALANCE.governing.INITIAL_HOUSE_REP,
+      houseInd: BALANCE.governing.INITIAL_HOUSE_IND,
+      senateDem: BALANCE.governing.INITIAL_SENATE_DEM,
+      senateRep: BALANCE.governing.INITIAL_SENATE_REP,
+      senateInd: BALANCE.governing.INITIAL_SENATE_IND,
+    });
+    expect(state.governing!.legislationHistory).toEqual([]);
+    expect(state.governing!.cabinet).toEqual({});
+
+    // And the resulting state is a normal, playable governing state.
+    expect(() => advanceGoverningTurn(state, { crisisResponses: {} })).not.toThrow();
+  });
+
+  it('works for independents too, since there is no party primary to skip', () => {
+    const player = createCustomPlayer({
+      name: 'Indy Skip',
+      age: 55,
+      homeState: 'CA',
+      party: 'independent',
+      priorOffice: 'business',
+      traits: ['outsider', 'fundraiser', 'media_savvy'],
+    });
+    const state = createInitialGoverningGameState({ player, positions: neutralPositions() });
+    expect(state.phase).toBe('governing');
   });
 });
