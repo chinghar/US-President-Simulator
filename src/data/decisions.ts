@@ -1,0 +1,130 @@
+import type { Decision } from '../engine/types';
+
+/**
+ * A starter pool of representative decisions, used to exercise and
+ * demonstrate the support model in Phase 1 (determinism/trade-off tests,
+ * the sample simulation). Phase 5 replaces/expands this with the full
+ * data-driven bill and executive-order pools using the same Decision shape —
+ * adding a new one is a data-file edit, never an engine change.
+ *
+ * Every decision here helps at least one persona and hurts at least one,
+ * enforced by engine/validators.ts.
+ */
+export const SAMPLE_DECISIONS: Decision[] = [
+  {
+    id: 'raise_taxes_high_earners',
+    label: 'Raise Taxes on High Earners',
+    description: 'Add a new top marginal bracket for income above $1M, closing several deductions.',
+    axisEffects: { economy: -15 },
+    personaEffects: {
+      union_households: 10,
+      black_voters: 6,
+      young_progressives: 8,
+      urban_professionals: 5,
+      college_students: 7,
+      small_business_owners: -10,
+      libertarian_independents: -8,
+      exurban_swing_voters: -3,
+      seniors: -2,
+    },
+    stakeholderEffects: {
+      donor_class: -15,
+      labor_unions: 10,
+      business_lobby: -12,
+      senate_rep_caucus: -8,
+      senate_dem_caucus: 6,
+    },
+    economyEffects: { gdpGrowth: -0.1, deficit: -30 },
+    cost: { politicalCapital: 15 },
+  },
+  {
+    id: 'cut_corporate_tax_rate',
+    label: 'Cut the Corporate Tax Rate',
+    description: 'Lower the federal corporate tax rate to spur business investment.',
+    axisEffects: { economy: 15 },
+    personaEffects: {
+      small_business_owners: 10,
+      libertarian_independents: 8,
+      exurban_swing_voters: 3,
+      union_households: -8,
+      black_voters: -4,
+      young_progressives: -6,
+    },
+    stakeholderEffects: { business_lobby: 12, donor_class: 10, labor_unions: -10 },
+    economyEffects: { gdpGrowth: 0.3, deficit: 40 },
+    cost: { politicalCapital: 12 },
+  },
+  {
+    id: 'border_security_surge',
+    label: 'Border Security Surge',
+    description: 'Deploy additional personnel and infrastructure to the southern border.',
+    axisEffects: { immigration: 20 },
+    personaEffects: {
+      rural_working_class: 8,
+      evangelical_conservatives: 7,
+      exurban_swing_voters: 5,
+      military_veteran_households: 4,
+      hispanic_voters: -10,
+      urban_professionals: -5,
+      young_progressives: -8,
+      college_students: -6,
+    },
+    stakeholderEffects: { house_rep_caucus: 8, house_dem_caucus: -6, foreign_bloc_nonaligned: -3 },
+    economyEffects: { deficit: 10 },
+    cost: { politicalCapital: 10, treasury: 2_000_000_000 },
+  },
+  {
+    id: 'path_to_citizenship_reform',
+    label: 'Path to Citizenship Reform',
+    description: 'Create an earned path to citizenship for long-resident undocumented immigrants.',
+    axisEffects: { immigration: -20 },
+    personaEffects: {
+      hispanic_voters: 12,
+      urban_professionals: 6,
+      young_progressives: 8,
+      college_students: 6,
+      rural_working_class: -8,
+      evangelical_conservatives: -6,
+      exurban_swing_voters: -4,
+    },
+    stakeholderEffects: { house_dem_caucus: 8, house_rep_caucus: -8, business_lobby: 5 },
+    cost: { politicalCapital: 18 },
+  },
+  {
+    id: 'expand_public_healthcare_option',
+    label: 'Expand the Public Healthcare Option',
+    description: 'Open a government-run insurance plan to compete on the individual market.',
+    axisEffects: { healthcare: -20 },
+    personaEffects: {
+      seniors: 8,
+      union_households: 7,
+      black_voters: 8,
+      young_progressives: 9,
+      college_students: 6,
+      small_business_owners: -9,
+      libertarian_independents: -10,
+      evangelical_conservatives: -3,
+    },
+    stakeholderEffects: { labor_unions: 10, business_lobby: -8, donor_class: -5 },
+    economyEffects: { deficit: 25 },
+    cost: { politicalCapital: 20 },
+  },
+  {
+    id: 'tough_on_crime_sentencing',
+    label: 'Tough-on-Crime Sentencing Reform',
+    description: 'Impose mandatory minimums for repeat violent offenders.',
+    axisEffects: { crime: 20 },
+    personaEffects: {
+      suburban_parents: 6,
+      seniors: 5,
+      exurban_swing_voters: 5,
+      evangelical_conservatives: 5,
+      black_voters: -10,
+      young_progressives: -9,
+      college_students: -7,
+      urban_professionals: -4,
+    },
+    stakeholderEffects: { house_rep_caucus: 6, house_dem_caucus: -5 },
+    cost: { politicalCapital: 8 },
+  },
+];

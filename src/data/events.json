@@ -1,0 +1,399 @@
+[
+  {
+    "id": "recession_hits",
+    "category": "recession",
+    "title": "The Economy Contracts",
+    "description": "Unemployment is climbing and economists are calling it: the country has slipped into recession.",
+    "weight": 3,
+    "repeatable": true,
+    "prerequisites": { "minUnemployment": 6.5 },
+    "options": [
+      {
+        "id": "emergency_stimulus",
+        "label": "Push an emergency stimulus package",
+        "description": "Rush direct aid and infrastructure spending through Congress.",
+        "economyEffects": { "gdpGrowth": 0.5, "deficit": 60 },
+        "personaEffects": { "union_households": 6, "black_voters": 5, "small_business_owners": 4, "libertarian_independents": -8, "seniors": -3 }
+      },
+      {
+        "id": "hold_the_line",
+        "label": "Hold the line on spending",
+        "description": "Resist new spending and let automatic stabilizers do the work.",
+        "economyEffects": { "deficit": -10 },
+        "personaEffects": { "libertarian_independents": 6, "small_business_owners": 3, "union_households": -6, "black_voters": -5 }
+      },
+      {
+        "id": "targeted_tax_cut",
+        "label": "Cut taxes to spur investment",
+        "description": "A targeted business tax cut aimed at reviving growth.",
+        "economyEffects": { "gdpGrowth": 0.3, "deficit": 30 },
+        "personaEffects": { "small_business_owners": 6, "libertarian_independents": 5, "union_households": -4 }
+      },
+      {
+        "id": "let_markets_correct",
+        "label": "Let markets correct on their own",
+        "description": "Avoid intervention and trust the business cycle.",
+        "personaEffects": { "libertarian_independents": 3, "union_households": -8, "black_voters": -6, "seniors": -5 }
+      }
+    ]
+  },
+  {
+    "id": "hurricane_landfall",
+    "category": "natural_disaster",
+    "title": "Category 5 Hurricane Makes Landfall",
+    "description": "A catastrophic hurricane has devastated coastal communities, with billions in damage and thousands displaced.",
+    "weight": 4,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "full_federal_response",
+        "label": "Launch a full federal disaster response",
+        "description": "Deploy FEMA at full scale with generous rebuilding funds.",
+        "economyEffects": { "deficit": 25 },
+        "personaEffects": { "rural_working_class": 6, "small_business_owners": 5, "seniors": 4, "libertarian_independents": -6 }
+      },
+      {
+        "id": "state_led_response",
+        "label": "Let states lead with limited federal aid",
+        "description": "Provide modest federal support and defer to state emergency management.",
+        "personaEffects": { "libertarian_independents": 5, "rural_working_class": -6, "small_business_owners": -4 }
+      },
+      {
+        "id": "resilience_investment",
+        "label": "Rebuild with climate resilience funding",
+        "description": "Pair disaster relief with investment in storm-resistant infrastructure.",
+        "axisEffects": { "climate": -8 },
+        "economyEffects": { "deficit": 35 },
+        "personaEffects": { "young_progressives": 5, "urban_professionals": 4, "rural_working_class": 3, "small_business_owners": -3, "libertarian_independents": -7 }
+      }
+    ]
+  },
+  {
+    "id": "regional_conflict_escalates",
+    "category": "foreign_conflict",
+    "title": "Regional Conflict Escalates",
+    "description": "Fighting between rival regional powers threatens to draw in American allies.",
+    "weight": 3,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "deploy_military_support",
+        "label": "Deploy military support to allies",
+        "description": "Send forces to reinforce treaty allies in the region.",
+        "axisEffects": { "foreign": 12 },
+        "personaEffects": { "military_veteran_households": 7, "rural_working_class": 3, "young_progressives": -8, "college_students": -6 },
+        "stakeholderEffects": { "foreign_bloc_allies": 8, "foreign_bloc_rivals": -6 },
+        "economyEffects": { "deficit": 30 }
+      },
+      {
+        "id": "diplomatic_only",
+        "label": "Pursue a diplomatic-only response",
+        "description": "Rely on sanctions and negotiation rather than force.",
+        "axisEffects": { "foreign": -10 },
+        "personaEffects": { "young_progressives": 6, "urban_professionals": 4, "military_veteran_households": -5 },
+        "stakeholderEffects": { "foreign_bloc_rivals": 3 }
+      },
+      {
+        "id": "arms_and_funding",
+        "label": "Provide arms and funding without troops",
+        "description": "Back allies materially while keeping American forces out of direct combat.",
+        "axisEffects": { "foreign": 5 },
+        "personaEffects": { "military_veteran_households": 4, "union_households": 3, "young_progressives": -5 },
+        "economyEffects": { "deficit": 15 }
+      },
+      {
+        "id": "stay_out",
+        "label": "Stay fully out of it",
+        "description": "Decline involvement entirely.",
+        "personaEffects": { "libertarian_independents": 6, "young_progressives": 3, "military_veteran_households": -6 },
+        "stakeholderEffects": { "foreign_bloc_allies": -8 }
+      }
+    ]
+  },
+  {
+    "id": "novel_virus_spreads",
+    "category": "pandemic",
+    "title": "A Novel Virus Spreads",
+    "description": "A fast-moving respiratory virus is spreading nationwide, straining hospitals in several states.",
+    "weight": 2,
+    "repeatable": false,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "mandate_public_health_measures",
+        "label": "Mandate public health measures",
+        "description": "Order masking and capacity limits in affected areas.",
+        "personaEffects": { "seniors": 6, "urban_professionals": 4, "black_voters": 3, "small_business_owners": -8, "libertarian_independents": -8, "rural_working_class": -5 }
+      },
+      {
+        "id": "voluntary_guidelines",
+        "label": "Issue voluntary guidelines only",
+        "description": "Protect the economy by leaving precautions to individual choice.",
+        "personaEffects": { "small_business_owners": 6, "libertarian_independents": 6, "seniors": -7, "urban_professionals": -4 }
+      },
+      {
+        "id": "vaccine_push",
+        "label": "Launch a rapid vaccine development push",
+        "description": "Fund an all-out push to develop and distribute a vaccine.",
+        "economyEffects": { "deficit": 40 },
+        "personaEffects": { "seniors": 7, "urban_professionals": 5, "college_students": 4, "libertarian_independents": -5 }
+      },
+      {
+        "id": "targeted_response",
+        "label": "Respond only in the hardest-hit regions",
+        "description": "A narrowly targeted, region-specific response.",
+        "personaEffects": { "exurban_swing_voters": 4, "suburban_parents": 3, "urban_professionals": -3, "rural_working_class": -3 }
+      }
+    ]
+  },
+  {
+    "id": "administration_scandal",
+    "category": "scandal",
+    "title": "Administration Official Embroiled in Scandal",
+    "description": "A senior official faces allegations that are dominating the news cycle.",
+    "weight": 3,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "fire_official",
+        "label": "Fire the official immediately",
+        "description": "Cut ties quickly to limit the political damage.",
+        "personaEffects": { "exurban_swing_voters": 5, "suburban_parents": 4, "libertarian_independents": -3 },
+        "stakeholderEffects": { "party_establishment": -5 }
+      },
+      {
+        "id": "stand_by_them",
+        "label": "Stand by them and call it a political attack",
+        "description": "Defend the official publicly and dismiss the allegations.",
+        "personaEffects": { "evangelical_conservatives": 3, "rural_working_class": 2, "urban_professionals": -6, "young_progressives": -6, "exurban_swing_voters": -5 }
+      },
+      {
+        "id": "independent_investigation",
+        "label": "Order an independent investigation",
+        "description": "Let a independent inquiry determine the facts before acting.",
+        "personaEffects": { "urban_professionals": 4, "libertarian_independents": 5, "evangelical_conservatives": -3 },
+        "stakeholderEffects": { "party_establishment": -3 }
+      }
+    ]
+  },
+  {
+    "id": "mass_shooting_shock",
+    "category": "mass_shooting",
+    "title": "Mass Shooting Shocks the Nation",
+    "description": "A mass shooting has left the country in mourning and reignited the national debate over guns.",
+    "weight": 2,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "push_gun_legislation",
+        "label": "Push for stricter gun legislation",
+        "description": "Call on Congress to pass new firearm restrictions.",
+        "axisEffects": { "crime": -8 },
+        "personaEffects": { "urban_professionals": 6, "young_progressives": 7, "suburban_parents": 5, "rural_working_class": -8, "evangelical_conservatives": -6 }
+      },
+      {
+        "id": "mental_health_focus",
+        "label": "Focus on mental health funding",
+        "description": "Fund mental-health services while defending gun rights.",
+        "economyEffects": { "deficit": 15 },
+        "personaEffects": { "rural_working_class": 5, "evangelical_conservatives": 5, "libertarian_independents": 3, "young_progressives": -5, "urban_professionals": -4 }
+      },
+      {
+        "id": "increase_security_funding",
+        "label": "Increase public security funding",
+        "description": "Fund additional security measures at schools and public venues.",
+        "economyEffects": { "deficit": 10 },
+        "personaEffects": { "suburban_parents": 6, "seniors": 3, "young_progressives": -3 }
+      },
+      {
+        "id": "no_action",
+        "label": "Offer condolences and take no new action",
+        "description": "Express sympathy without proposing policy change.",
+        "personaEffects": { "evangelical_conservatives": 2, "rural_working_class": 2, "young_progressives": -8, "urban_professionals": -6, "college_students": -6 }
+      }
+    ]
+  },
+  {
+    "id": "supreme_court_vacancy",
+    "category": "court_vacancy",
+    "title": "A Supreme Court Seat Opens",
+    "description": "A justice's retirement gives you a nomination that will shape the Court for a generation.",
+    "weight": 1,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "nominate_progressive",
+        "label": "Nominate a progressive jurist",
+        "description": "Pick a nominee favored by the party's left flank.",
+        "personaEffects": { "young_progressives": 7, "urban_professionals": 5, "black_voters": 4, "evangelical_conservatives": -8, "rural_working_class": -4 },
+        "stakeholderEffects": { "senate_rep_caucus": -8, "senate_dem_caucus": 6 }
+      },
+      {
+        "id": "nominate_conservative",
+        "label": "Nominate a conservative jurist",
+        "description": "Pick a nominee favored by the party's right flank.",
+        "personaEffects": { "evangelical_conservatives": 8, "rural_working_class": 5, "young_progressives": -8, "urban_professionals": -5 },
+        "stakeholderEffects": { "senate_dem_caucus": -8, "senate_rep_caucus": 6 }
+      },
+      {
+        "id": "nominate_centrist",
+        "label": "Nominate a consensus centrist",
+        "description": "Pick a nominee designed to draw votes from both parties.",
+        "personaEffects": { "exurban_swing_voters": 5, "suburban_parents": 4, "evangelical_conservatives": -2, "young_progressives": -2 },
+        "stakeholderEffects": { "party_establishment": 3 }
+      }
+    ]
+  },
+  {
+    "id": "border_crossings_surge",
+    "category": "border_surge",
+    "title": "Migrant Crossings Surge at the Border",
+    "description": "A sharp rise in border crossings is straining local resources and dominating headlines.",
+    "weight": 3,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "deploy_additional_enforcement",
+        "label": "Deploy additional enforcement",
+        "description": "Send more personnel and resources to the border.",
+        "axisEffects": { "immigration": 10 },
+        "personaEffects": { "rural_working_class": 6, "evangelical_conservatives": 5, "hispanic_voters": -8, "urban_professionals": -4 },
+        "economyEffects": { "deficit": 15 }
+      },
+      {
+        "id": "expand_humanitarian_processing",
+        "label": "Expand humanitarian processing capacity",
+        "description": "Add staff and facilities to process claims faster and more humanely.",
+        "axisEffects": { "immigration": -8 },
+        "personaEffects": { "hispanic_voters": 7, "urban_professionals": 5, "rural_working_class": -6, "evangelical_conservatives": -5 },
+        "economyEffects": { "deficit": 20 }
+      },
+      {
+        "id": "regional_migration_agreement",
+        "label": "Negotiate a regional migration agreement",
+        "description": "Work with neighboring governments on a coordinated response.",
+        "personaEffects": { "exurban_swing_voters": 4, "hispanic_voters": 3, "rural_working_class": -3 },
+        "stakeholderEffects": { "foreign_bloc_nonaligned": 5 }
+      }
+    ]
+  },
+  {
+    "id": "major_union_strike",
+    "category": "strike",
+    "title": "Major Union Strike Disrupts Industry",
+    "description": "A nationwide strike has halted production across a major industry.",
+    "weight": 3,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "side_with_workers",
+        "label": "Side with striking workers publicly",
+        "description": "Voice support for the union's demands.",
+        "stakeholderEffects": { "labor_unions": 10, "business_lobby": -8 },
+        "personaEffects": { "union_households": 8, "black_voters": 3, "small_business_owners": -6, "libertarian_independents": -5 }
+      },
+      {
+        "id": "push_back_to_work",
+        "label": "Push for a swift back-to-work deal",
+        "description": "Pressure both sides toward a settlement favoring continuity.",
+        "stakeholderEffects": { "business_lobby": 8, "labor_unions": -10 },
+        "personaEffects": { "small_business_owners": 6, "libertarian_independents": 4, "union_households": -8 }
+      },
+      {
+        "id": "broker_mediated_settlement",
+        "label": "Broker a neutral mediated settlement",
+        "description": "Bring in federal mediators to find middle ground.",
+        "stakeholderEffects": { "business_lobby": -2 },
+        "personaEffects": { "exurban_swing_voters": 4, "suburban_parents": 3, "union_households": 2, "libertarian_independents": -3 }
+      }
+    ]
+  },
+  {
+    "id": "critical_infrastructure_cyberattack",
+    "category": "cyberattack",
+    "title": "Cyberattack Hits Critical Infrastructure",
+    "description": "A sophisticated cyberattack has disrupted power and water systems in several states.",
+    "weight": 2,
+    "repeatable": true,
+    "prerequisites": {},
+    "options": [
+      {
+        "id": "retaliatory_cyber_operation",
+        "label": "Launch a retaliatory cyber operation",
+        "description": "Respond in kind against the suspected source.",
+        "axisEffects": { "foreign": 8 },
+        "stakeholderEffects": { "foreign_bloc_rivals": -10 },
+        "personaEffects": { "military_veteran_households": 5, "rural_working_class": 3, "young_progressives": -4 }
+      },
+      {
+        "id": "invest_in_cyberdefense",
+        "label": "Invest heavily in defensive cybersecurity",
+        "description": "Fund a major upgrade to critical-infrastructure protections.",
+        "economyEffects": { "deficit": 20 },
+        "personaEffects": { "urban_professionals": 5, "small_business_owners": 3, "libertarian_independents": -4 }
+      },
+      {
+        "id": "diplomatic_sanctions_only",
+        "label": "Pursue diplomatic sanctions only",
+        "description": "Respond through sanctions rather than escalation.",
+        "stakeholderEffects": { "foreign_bloc_rivals": -5 },
+        "personaEffects": { "young_progressives": 4, "urban_professionals": 3, "military_veteran_households": -5 }
+      }
+    ]
+  },
+  {
+    "id": "border_investment_local_strain",
+    "category": "consequence",
+    "title": "Border Communities Strain Under Enforcement Surge",
+    "description": "The border security buildup you funded is overwhelming local services in the towns hosting it.",
+    "weight": 2,
+    "repeatable": false,
+    "prerequisites": { "requiresPriorDecisionIds": ["border_security_investment"] },
+    "options": [
+      {
+        "id": "deploy_local_aid",
+        "label": "Deploy federal aid to affected border communities",
+        "description": "Send emergency funding to offset the strain.",
+        "economyEffects": { "deficit": 15 },
+        "personaEffects": { "hispanic_voters": 4, "rural_working_class": 3, "libertarian_independents": -4 }
+      },
+      {
+        "id": "no_additional_funding",
+        "label": "Stay the course with no additional funding",
+        "description": "Let local governments absorb the cost.",
+        "personaEffects": { "rural_working_class": 2, "hispanic_voters": -5, "urban_professionals": -3 }
+      }
+    ]
+  },
+  {
+    "id": "clean_energy_job_losses",
+    "category": "consequence",
+    "title": "Coal Country Reels From the Energy Transition",
+    "description": "The clean-energy transition you championed is costing jobs faster than expected in coal-dependent regions.",
+    "weight": 2,
+    "repeatable": false,
+    "prerequisites": { "requiresPriorDecisionIds": ["clean_energy_transition"] },
+    "options": [
+      {
+        "id": "coal_retraining_program",
+        "label": "Fund a coal-country retraining program",
+        "description": "Invest in job retraining for displaced energy workers.",
+        "economyEffects": { "deficit": 15 },
+        "personaEffects": { "rural_working_class": 5, "union_households": 3, "libertarian_independents": -4 }
+      },
+      {
+        "id": "no_action_energy",
+        "label": "Take no additional action",
+        "description": "Let the market absorb the transition.",
+        "personaEffects": { "young_progressives": 2, "rural_working_class": -6, "union_households": -4 }
+      }
+    ]
+  }
+]
