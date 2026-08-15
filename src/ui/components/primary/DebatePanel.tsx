@@ -19,7 +19,7 @@ export function DebatePanel({ debate, selectedAnswerId, onSelect }: DebatePanelP
             onClick={() => onSelect(answer.id)}
             className={[
               'w-full border px-3 py-2 text-left text-small transition-colors duration-150',
-              selectedAnswerId === answer.id ? 'border-seal bg-seal/10 text-paper' : 'border-rule text-paper/70 hover:border-paper/50',
+              selectedAnswerId === answer.id ? 'border-seal bg-seal text-parchment' : 'border-rule text-paper/70 hover:border-paper/50',
             ].join(' ')}
           >
             {answer.label}
