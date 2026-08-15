@@ -220,9 +220,19 @@ export const BALANCE = {
      * (1 - concessionLevel) — i.e. a fully watered-down bill (concessionLevel 0) keeps this fraction of its punch. */
     MIN_CONCESSION_EFFECT_STRENGTH: 0.4,
 
-    /** Senate confirmation follows the same probability model as a Senate vote on a bill,
-     * using the appointee's ideology as the "bill" being voted on. */
+    /** Senate confirmation follows the same shape as a bill vote (the appointee's ideology
+     * stands in for "the bill"), but with its own, much friendlier parameters below — real
+     * cabinet nominees are confirmed the vast majority of the time, deference that bill votes
+     * don't get. Only a genuinely extreme appointee facing a hostile Senate is at real risk. */
     CONFIRMATION_IDEOLOGY_SCALE: 100,
+    /** Baseline yes-vote probability per senator, before ideology shifts it either way. */
+    CABINET_CONFIRMATION_BASE_PROBABILITY: 0.9,
+    /** How much ideological (mis)alignment with a caucus can swing that baseline, +/- —
+     * deliberately much smaller than VOTE_ALIGNMENT_WEIGHT. */
+    CABINET_CONFIRMATION_ALIGNMENT_WEIGHT: 0.12,
+    /** Random noise half-width — smaller than a bill vote's, since a nomination that's
+     * clearly headed for confirmation rarely gets upset by a late surprise. */
+    CABINET_CONFIRMATION_NOISE_MAGNITUDE: 0.03,
 
     /** Every confirmed cabinet appointee's competence (0-100) and loyalty (0-100) combine into
      * an "effectiveness" of -1..+1 — see cabinetEffectiveness() in engine/governing.ts. Loyalty

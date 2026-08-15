@@ -30,7 +30,7 @@ export function GoverningDashboardScreen() {
   const resetGame = useGameStore((s) => s.resetGame);
 
   const [crisisResponses, setCrisisResponses] = useState<Record<string, string>>({});
-  const [cabinetAppointment, setCabinetAppointment] = useState<{ positionId: CabinetPositionId; appointeeId: string } | null>(null);
+  const [cabinetAppointments, setCabinetAppointments] = useState<{ positionId: CabinetPositionId; appointeeId: string }[]>([]);
   const [proposedBill, setProposedBill] = useState<ProposedBillInput | null>(null);
   const [executiveOrderId, setExecutiveOrderId] = useState<string | null>(null);
   const [signing, setSigning] = useState<{ docket: string; title: string } | null>(null);
@@ -42,7 +42,7 @@ export function GoverningDashboardScreen() {
 
   const approval = computeNationalApproval(game);
   const allEventsAnswered = pendingEvents.every((e) => crisisResponses[e.id]);
-  const actionsUsed = (cabinetAppointment ? 1 : 0) + (proposedBill ? 2 : 0) + (executiveOrderId ? 1 : 0);
+  const actionsUsed = cabinetAppointments.length + (proposedBill ? 2 : 0) + (executiveOrderId ? 1 : 0);
   const nextMonth = game.date.month === 12 ? 1 : game.date.month + 1;
   const nextYear = game.date.month === 12 ? game.date.year + 1 : game.date.year;
   const reactionRows = personaSupport ? Object.values(personaSupport).sort((a, b) => b.total - a.total).slice(0, 5) : [];
@@ -54,7 +54,7 @@ export function GoverningDashboardScreen() {
 
     advanceGoverning({
       crisisResponses,
-      cabinetAppointment: cabinetAppointment ?? undefined,
+      cabinetAppointments: cabinetAppointments.length > 0 ? cabinetAppointments : undefined,
       proposedBill: proposedBill ?? undefined,
       executiveOrder: executiveOrderId ? { orderId: executiveOrderId } : undefined,
     });
@@ -71,7 +71,7 @@ export function GoverningDashboardScreen() {
     }
 
     setCrisisResponses({});
-    setCabinetAppointment(null);
+    setCabinetAppointments([]);
     setProposedBill(null);
     setExecutiveOrderId(null);
   }
@@ -192,15 +192,16 @@ export function GoverningDashboardScreen() {
           ))}
 
           <p className="text-[13px] text-paper/40">
-            Action budget this month: {actionsUsed}/4 spent — cabinet appointment 1, bill 2, executive order 1.
+            Action budget this month: {actionsUsed}/4 spent — each cabinet appointment 1, bill 2, executive order 1.
           </p>
 
           <div id="cabinet" className="scroll-mt-6">
             <CabinetPanel
               cabinet={game.governing.cabinet}
-              pendingAppointment={cabinetAppointment}
-              onChange={setCabinetAppointment}
-              canAppoint={actionsUsed - (cabinetAppointment ? 1 : 0) + 1 <= 4}
+              pendingAppointments={cabinetAppointments}
+              onAppoint={(positionId, appointeeId) => setCabinetAppointments((prev) => [...prev, { positionId, appointeeId }])}
+              onCancel={(positionId) => setCabinetAppointments((prev) => prev.filter((p) => p.positionId !== positionId))}
+              canAppoint={actionsUsed + 1 <= 4}
             />
           </div>
 
