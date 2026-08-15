@@ -224,9 +224,16 @@ export const BALANCE = {
      * using the appointee's ideology as the "bill" being voted on. */
     CONFIRMATION_IDEOLOGY_SCALE: 100,
 
-    /** Cabinet competence (0-100) feeds a small ongoing ambient economic effect only for
-     * Treasury, scaled by this factor per point of (competence - 50). */
-    TREASURY_COMPETENCE_GDP_FACTOR: 0.004,
+    /** Every confirmed cabinet appointee's competence (0-100) and loyalty (0-100) combine into
+     * an "effectiveness" of -1..+1 — see cabinetEffectiveness() in engine/governing.ts. Loyalty
+     * is a multiplier, not an independent bonus: a highly competent but disloyal appointee
+     * under-delivers on their own competence, and a loyal-but-weak one still faithfully (if
+     * modestly) delivers in whatever direction their competence points. */
+    TREASURY_COMPETENCE_GDP_FACTOR: 0.2,
+    /** Every position's effectiveness also nudges the personas already named in that
+     * appointee's own personaEffects (the same ones rewarded once at confirmation), by this
+     * fraction of that value each month while they remain in office. */
+    CABINET_AMBIENT_PERSONA_SCALE: 0.15,
 
     /** How many crisis events can trigger in a single month, and the RNG weight curve. */
     MAX_EVENTS_PER_MONTH: 2,

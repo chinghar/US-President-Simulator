@@ -14,7 +14,10 @@ import { REAL_CANDIDATES } from '../src/data/real-candidates';
 import { BILLS } from '../src/data/bills';
 import { EXECUTIVE_ORDERS } from '../src/data/executive-orders';
 import { EVENTS, assertEventsValidInDev } from '../src/data/events';
+import { CABINET_APPOINTEES } from '../src/data/cabinet';
 import { getAllTradeoffErrors } from '../src/engine/validators';
+import { ambientCabinetEffects, cabinetEffectiveness, resolveCabinetAppointment } from '../src/engine/governing';
+import { RngCursor } from '../src/engine/rng';
 import type { AdvanceGoverningTurnInput } from '../src/engine/governing';
 import { ISSUE_AXES, type GameState } from '../src/engine/types';
 
@@ -298,5 +301,74 @@ describe('real-candidate mode', () => {
         expect(Math.abs(candidate.startingPositions[axis])).toBeLessThanOrEqual(40);
       }
     }
+  });
+});
+
+describe('cabinet: competence, ideology, and loyalty all matter', () => {
+  it('every appointee has a loyalty rating in range', () => {
+    for (const a of CABINET_APPOINTEES) {
+      expect(a.loyalty).toBeGreaterThanOrEqual(0);
+      expect(a.loyalty).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('loyalty is a multiplier on competence, not an independent bonus', () => {
+    const competentLoyal = cabinetEffectiveness({ competence: 90, loyalty: 90 });
+    const competentDisloyal = cabinetEffectiveness({ competence: 90, loyalty: 20 });
+    const mediocreLoyal = cabinetEffectiveness({ competence: 50, loyalty: 90 });
+
+    // High competence pays off far more when paired with high loyalty.
+    expect(competentLoyal).toBeGreaterThan(competentDisloyal);
+    // A disloyal appointee's competence barely translates into anything.
+    expect(competentDisloyal).toBeGreaterThan(0);
+    expect(competentDisloyal).toBeLessThan(0.3);
+    // Loyalty alone, with nothing but average competence, is worth nothing.
+    expect(mediocreLoyal).toBe(0);
+  });
+
+  it('loyalty amplifies incompetence too — a loyal-but-weak appointee is a bigger drag than a disloyal one', () => {
+    const weakLoyal = cabinetEffectiveness({ competence: 10, loyalty: 90 });
+    const weakDisloyal = cabinetEffectiveness({ competence: 10, loyalty: 20 });
+    expect(weakLoyal).toBeLessThan(weakDisloyal);
+    expect(weakLoyal).toBeLessThan(0);
+  });
+
+  it('ambientCabinetEffects produces nothing for a vacant or unconfirmed cabinet', () => {
+    const empty = ambientCabinetEffects({}, 0);
+    expect(empty).toEqual([]);
+
+    const unconfirmed = ambientCabinetEffects({ treasury: { positionId: 'treasury', appointeeId: 'laura_kessler', confirmed: false, monthAppointed: 0 } }, 0);
+    expect(unconfirmed).toEqual([]);
+  });
+
+  it('a confirmed, effective Treasury secretary produces both an economy and a persona ambient effect', () => {
+    const kessler = CABINET_APPOINTEES.find((a) => a.id === 'laura_kessler')!;
+    expect(kessler.competence).toBeGreaterThan(50); // sanity: should be a net-positive effect
+    const decisions = ambientCabinetEffects({ treasury: { positionId: 'treasury', appointeeId: 'laura_kessler', confirmed: true, monthAppointed: 0 } }, 5);
+
+    expect(decisions).toHaveLength(1);
+    expect(decisions[0].id).toBe('ambient_cabinet_treasury:5');
+    expect(decisions[0].economyEffects?.gdpGrowth).toBeGreaterThan(0);
+    // Kessler's confirmation-bonus personas (union_households/small_business_owners)
+    // get a small ongoing nudge in the same direction, scaled well down.
+    const effectiveness = cabinetEffectiveness(kessler);
+    expect(decisions[0].personaEffects.union_households).toBeCloseTo(4 * effectiveness * BALANCE.governing.CABINET_AMBIENT_PERSONA_SCALE, 6);
+  });
+
+  it('ideology still drives confirmation odds, independent of loyalty', () => {
+    // A heavily Democratic Senate — an appointee whose ideology aligns with
+    // that majority should be confirmed far more often than one who doesn't,
+    // regardless of either appointee's loyalty rating.
+    const congress = { houseDem: 300, houseRep: 130, houseInd: 5, senateDem: 80, senateRep: 20, senateInd: 0 };
+    let alignedConfirmed = 0;
+    let misalignedConfirmed = 0;
+    const trials = 200;
+    for (let seed = 1; seed <= trials; seed++) {
+      const aligned = resolveCabinetAppointment('energy', 'alan_frost', congress, new RngCursor(seed), 0); // ideology -40
+      const misaligned = resolveCabinetAppointment('energy', 'rebecca_stanton', congress, new RngCursor(seed + 100000), 0); // ideology +35
+      if (aligned.appointment.confirmed) alignedConfirmed++;
+      if (misaligned.appointment.confirmed) misalignedConfirmed++;
+    }
+    expect(alignedConfirmed).toBeGreaterThan(misalignedConfirmed);
   });
 });
