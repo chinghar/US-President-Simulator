@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { CustomCharacterForm } from './CustomCharacterForm';
-import { FigureGallery } from './FigureGallery';
 import { RealCandidateGallery } from './RealCandidateGallery';
 import { AmericanFlag, Eyebrow, PresidentialSeal } from '../kit';
 import type { StartMode } from '../state/gameStore';
 
-type Tab = 'figure' | 'custom' | 'real';
+type Tab = 'custom' | 'real';
 
 const MODE_COPY: Record<StartMode, string> = {
   campaign: 'Contest the primary and the general election, month by month, before taking office.',
@@ -13,13 +12,12 @@ const MODE_COPY: Record<StartMode, string> = {
 };
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'figure', label: 'Choose a figure' },
   { id: 'custom', label: 'Build a candidate' },
   { id: 'real', label: '2028 hypothetical candidates' },
 ];
 
 export function CharacterCreationScreen() {
-  const [tab, setTab] = useState<Tab>('figure');
+  const [tab, setTab] = useState<Tab>('custom');
   const [mode, setMode] = useState<StartMode>('campaign');
 
   return (
@@ -30,7 +28,7 @@ export function CharacterCreationScreen() {
         <div>
           <Eyebrow>2028</Eyebrow>
           <h1 className="font-display text-h1 text-paper">USA Presidential Simulator</h1>
-          <p className="mt-1 text-small text-paper/60">Choose a figure to run as, or build a candidate of your own.</p>
+          <p className="mt-1 text-small text-paper/60">Build a candidate of your own, or play as a real public figure.</p>
         </div>
       </header>
 
@@ -79,13 +77,7 @@ export function CharacterCreationScreen() {
         ))}
       </div>
 
-      {tab === 'figure' ? (
-        <FigureGallery mode={mode} />
-      ) : tab === 'custom' ? (
-        <CustomCharacterForm mode={mode} />
-      ) : (
-        <RealCandidateGallery mode={mode} />
-      )}
+      {tab === 'custom' ? <CustomCharacterForm mode={mode} /> : <RealCandidateGallery mode={mode} />}
     </div>
   );
 }

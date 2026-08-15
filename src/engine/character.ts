@@ -2,7 +2,6 @@ import { PRIOR_OFFICES } from '../data/prior-offices';
 import { TRAITS } from '../data/traits';
 import {
   clamp,
-  type Figure,
   type Party,
   type PersonaId,
   type PlayerCharacter,
@@ -114,21 +113,6 @@ export function createCustomPlayer(input: CustomCharacterInput): PlayerCharacter
     priorOffice: input.priorOffice,
     traits: input.traits,
     ...stats,
-  };
-}
-
-export function createPlayerFromFigure(figure: Figure): PlayerCharacter {
-  return {
-    name: figure.name,
-    age: figure.age,
-    homeState: figure.homeState,
-    party: figure.party,
-    priorOffice: figure.priorOffice,
-    traits: figure.traits,
-    nameRecognition: figure.nameRecognition,
-    warChest: figure.warChest,
-    partyEstablishmentFavor: figure.partyEstablishmentFavor,
-    baseEnthusiasm: figure.baseEnthusiasm,
   };
 }
 

@@ -187,26 +187,6 @@ export interface PriorOfficeInfo {
   baseStats: StartingStats;
 }
 
-/** A pre-made candidate archetype from /src/data/figures.json. Fully
- * self-specified (no derivation from PRIOR_OFFICE_INFO) so each figure can be
- * hand-tuned; the engine reads this shape generically and never special-cases
- * a specific figure's id. */
-export interface Figure {
-  id: string;
-  name: string;
-  bio: string;
-  age: number;
-  homeState: StateId;
-  party: Party;
-  priorOffice: PriorOffice;
-  traits: TraitId[];
-  startingPositions: AxisPositions;
-  nameRecognition: number;
-  warChest: number;
-  partyEstablishmentFavor: number;
-  baseEnthusiasm: number;
-}
-
 export interface PlayerCharacter {
   name: string;
   age: number;
