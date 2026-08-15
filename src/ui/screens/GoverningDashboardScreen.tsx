@@ -91,7 +91,7 @@ export function GoverningDashboardScreen() {
             <p className="text-[13px] text-paper">{game.player.name}</p>
           </div>
         </div>
-        <div className="flex gap-3 pr-28 text-right font-mono text-[13px]">
+        <div className="flex gap-3 pr-44 text-right font-mono text-[13px]">
           <div>
             <p className="text-[10px] uppercase tracking-[0.08em] text-paper/40">Approval</p>
             <p className="text-paper">{approval.toFixed(0)}%</p>

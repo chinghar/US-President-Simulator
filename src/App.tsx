@@ -8,22 +8,27 @@ import { PrimaryCampaignScreen } from './ui/screens/PrimaryCampaignScreen';
 import { PrimaryPostMortemScreen } from './ui/screens/PrimaryPostMortemScreen';
 import { VpSelectionScreen } from './ui/screens/VpSelectionScreen';
 import { SaveLoadMenu } from './ui/components/SaveLoadMenu';
+import { useTheme } from './ui/hooks/useTheme';
 import { useGameStore } from './ui/state/gameStore';
+
+const CHROME_BUTTON = 'border border-rule bg-ink-900 px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-paper/60 transition-colors duration-150 hover:border-brass hover:text-brass';
 
 export default function App() {
   const game = useGameStore((s) => s.game);
   const electionNightAcknowledged = useGameStore((s) => s.electionNightAcknowledged);
   const [saveMenuOpen, setSaveMenuOpen] = useState(false);
+  const { theme, toggle } = useTheme();
 
   return (
     <div className="min-h-screen bg-ink-900 text-paper">
-      <button
-        type="button"
-        onClick={() => setSaveMenuOpen(true)}
-        className="fixed right-3 top-3 z-40 border border-rule bg-ink-900 px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-paper/60 transition-colors duration-150 hover:border-brass hover:text-brass"
-      >
-        Save / Load
-      </button>
+      <div className="fixed right-3 top-3 z-40 flex gap-2">
+        <button type="button" onClick={toggle} className={CHROME_BUTTON}>
+          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+        </button>
+        <button type="button" onClick={() => setSaveMenuOpen(true)} className={CHROME_BUTTON}>
+          Save / Load
+        </button>
+      </div>
       {saveMenuOpen && <SaveLoadMenu onClose={() => setSaveMenuOpen(false)} />}
       {renderScreen()}
     </div>

@@ -83,6 +83,10 @@ export function UsMap({
         const abs = Math.abs(margin);
         const solidColor = margin < 0 ? negativeColor : margin > 0 ? positiveColor : 'var(--rule)';
         const fill = abs >= SOLID_THRESHOLD ? solidColor : `url(#hatch-${state.id})`;
+        // Solid fills are always dark (--union / --flag / --seal), so their
+        // label always needs the fixed light --parchment, not the
+        // mode-flipping --paper used against the hatch-pattern tiles.
+        const textFill = abs >= SOLID_THRESHOLD ? 'var(--parchment)' : 'var(--paper)';
         const isSelected = selectedState === state.id;
         const isHovered = hovered === state.id;
 
@@ -107,7 +111,7 @@ export function UsMap({
               stroke={isSelected || isHovered ? 'var(--paper)' : 'var(--rule)'}
               strokeWidth={isSelected || isHovered ? 1.5 : 0.75}
             />
-            <text x={CELL / 2} y={CELL / 2 + 4} textAnchor="middle" className="fill-paper font-mono text-[13px] font-medium">
+            <text x={CELL / 2} y={CELL / 2 + 4} textAnchor="middle" fill={textFill} className="font-mono text-[13px] font-medium">
               {state.id}
             </text>
           </g>

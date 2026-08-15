@@ -74,7 +74,7 @@ export function SigningFlourish({ docket, title, onComplete }: SigningFlourishPr
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink-900/80 pb-16">
       <div
-        className="w-full max-w-md border-l-2 border-seal bg-paper p-6 text-[#1a1a1a] transition-transform duration-[600ms] ease-out"
+        className="w-full max-w-md border-l-2 border-seal bg-parchment p-6 text-[#1a1a1a] transition-transform duration-[600ms] ease-out"
         style={{ transform: risen ? 'translateY(0)' : 'translateY(120%)' }}
       >
         <p className="font-mono text-[11px] tracking-wide text-[#1a1a1a]/60">{docket}</p>

@@ -4,14 +4,46 @@
  * ONLY — never chrome, buttons, or navigation. --brass is restricted to
  * signatures, seals, and legacy/achievement moments — keep it under 5% of
  * any given screen.
+ *
+ * Two modes: dark (the default "walnut desk") and light (the same desk in
+ * daylight — surfaces become paper/vellum, ink becomes the text color).
+ * --parchment is the one constant across both: the physical color of a
+ * document sitting on the desk, and of text/icons that sit on the
+ * always-dark accent fills (--seal, --union, --flag buttons). It never
+ * changes with the mode.
  */
 :root {
+  color-scheme: dark;
+
+  /* Dark mode (default). */
   --ink-900: #0e1116; /* base surface, near-black with a blue cast */
   --ink-700: #1a2028; /* raised panels, cards */
   --rule: #2e3742; /* hairline dividers, engraved lines */
-  --paper: #ede7d6; /* document surfaces, primary text on dark */
+  --paper: #ede7d6; /* primary text/ink color on chrome */
   --seal: #1f5c3f; /* Treasury green — primary accent: actions, confirmations, positive deltas */
   --brass: #c9a227; /* secondary accent — signatures, seals, legacy moments only */
   --union: #2b4a7d; /* Democratic / left-of-center data */
   --flag: #9b2226; /* Republican / right-of-center data, and danger states */
+
+  --parchment: #ede7d6; /* fixed: document surfaces, text on solid accent fills */
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    color-scheme: light;
+    --ink-900: #f4f1e7;
+    --ink-700: #e9e3d3;
+    --rule: #b0a488;
+    --paper: #14181d;
+    --brass: #8a6914;
+  }
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink-900: #f4f1e7;
+  --ink-700: #e9e3d3;
+  --rule: #b0a488;
+  --paper: #14181d;
+  --brass: #8a6914;
 }
