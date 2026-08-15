@@ -1,6 +1,6 @@
 import { BALANCE } from '../data/balance';
 import { BILLS } from '../data/bills';
-import { CABINET_APPOINTEES } from '../data/cabinet';
+import { CABINET_APPOINTEES, CABINET_POSITION_INFO } from '../data/cabinet';
 import { EVENTS } from '../data/events';
 import { EXECUTIVE_ORDERS } from '../data/executive-orders';
 import { HEADLINE_TEMPLATES, type HeadlineFraming } from '../data/media-templates';
@@ -14,6 +14,7 @@ import { computeNationalApproval } from './support';
 import { RngCursor } from './rng';
 import {
   clamp,
+  CABINET_POSITION_IDS,
   PERSONA_IDS,
   type Bill,
   type CabinetAppointment,
@@ -397,14 +398,58 @@ export function resolveCabinetAppointment(
   };
 }
 
-/** Only Treasury's competence produces an ongoing ambient economic effect —
- * a modest, continuous nudge rather than a one-time appointment bonus. */
-export function ambientCabinetEconomyEffects(cabinet: GoverningState['cabinet']): EconomyEffects {
-  const treasury = cabinet.treasury;
-  if (!treasury?.confirmed) return {};
-  const appointee = CABINET_APPOINTEES.find((a) => a.id === treasury.appointeeId);
-  if (!appointee) return {};
-  return { gdpGrowth: (appointee.competence - 50) * BALANCE.governing.TREASURY_COMPETENCE_GDP_FACTOR };
+/** -1 (incompetent) .. +1 (highly competent), with loyalty as a multiplier
+ * rather than an independent bonus: a highly competent but disloyal
+ * appointee under-delivers on their own competence, while a loyal-but-weak
+ * one still faithfully — if modestly — delivers in whatever direction their
+ * competence points. This is deliberate: competence alone isn't enough, and
+ * neither is loyalty alone. */
+export function cabinetEffectiveness(appointee: { competence: number; loyalty: number }): number {
+  const competenceFactor = (appointee.competence - 50) / 50;
+  const loyaltyFactor = appointee.loyalty / 100;
+  return competenceFactor * loyaltyFactor;
+}
+
+/** Every confirmed appointee produces one ambient Decision per month —
+ * Treasury nudges GDP growth, and every position (Treasury included) nudges
+ * the same personas already named in its own one-time confirmation bonus,
+ * scaled down and modulated by cabinetEffectiveness(). Positions with a
+ * vacant or unconfirmed seat, or whose appointee has near-zero effectiveness
+ * and no persona effects, produce nothing. */
+export function ambientCabinetEffects(cabinet: GoverningState['cabinet'], monthIndex: number): Decision[] {
+  const b = BALANCE.governing;
+  const decisions: Decision[] = [];
+
+  for (const positionId of CABINET_POSITION_IDS) {
+    const appointment = cabinet[positionId];
+    if (!appointment?.confirmed) continue;
+    const appointee = CABINET_APPOINTEES.find((a) => a.id === appointment.appointeeId);
+    if (!appointee) continue;
+
+    const effectiveness = cabinetEffectiveness(appointee);
+    const economyEffects: EconomyEffects | undefined =
+      positionId === 'treasury' && effectiveness !== 0 ? { gdpGrowth: effectiveness * b.TREASURY_COMPETENCE_GDP_FACTOR } : undefined;
+
+    const personaEffects: Partial<Record<PersonaId, number>> = {};
+    if (appointee.personaEffects) {
+      for (const personaId of PERSONA_IDS) {
+        const base = appointee.personaEffects[personaId];
+        if (base !== undefined) personaEffects[personaId] = base * effectiveness * b.CABINET_AMBIENT_PERSONA_SCALE;
+      }
+    }
+
+    if (!economyEffects && Object.keys(personaEffects).length === 0) continue;
+
+    decisions.push({
+      id: `ambient_cabinet_${positionId}:${monthIndex}`,
+      label: `${CABINET_POSITION_INFO[positionId].name} Stewardship`,
+      description: '',
+      personaEffects,
+      economyEffects,
+    });
+  }
+
+  return decisions;
 }
 
 // ---------------------------------------------------------------------------
@@ -615,11 +660,9 @@ export function advanceGoverningTurn(gameState: GameState, input: AdvanceGoverni
     }
   }
 
-  // 5. Ambient cabinet economy effect (Treasury competence).
-  const ambientEconomy = ambientCabinetEconomyEffects(cabinet);
-  if (ambientEconomy.gdpGrowth) {
-    decisions.push({ id: 'ambient_treasury', label: 'Treasury Stewardship', description: '', personaEffects: {}, economyEffects: ambientEconomy });
-  }
+  // 5. Ambient cabinet effects — every confirmed position, scaled by that
+  // appointee's competence and loyalty (see ambientCabinetEffects above).
+  decisions.push(...ambientCabinetEffects(cabinet, gameState.monthIndex));
 
   // 6. Apply everything through the same reducer as every other phase.
   const stateAfterDecisions = advanceMonth({ ...gameState, rngState: cursor.seed }, decisions);

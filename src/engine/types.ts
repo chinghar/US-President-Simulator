@@ -447,8 +447,9 @@ export interface CabinetAppointeeDef {
   name: string;
   position: CabinetPositionId;
   bio: string;
-  competence: number; // 0..100 — buffs the position's policy domain while serving
-  ideology: number; // -100..100, general political lean
+  competence: number; // 0..100 — how good they are at the job
+  ideology: number; // -100..100 — general political lean; drives Senate confirmation odds
+  loyalty: number; // 0..100 — how faithfully they execute the administration's agenda once serving
   stakeholderEffects?: Partial<Record<StakeholderId, number>>;
   personaEffects?: Partial<Record<PersonaId, number>>;
 }
