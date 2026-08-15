@@ -10,6 +10,7 @@ import { VpSelectionScreen } from './ui/screens/VpSelectionScreen';
 import { SaveLoadMenu } from './ui/components/SaveLoadMenu';
 import { useTheme } from './ui/hooks/useTheme';
 import { useGameStore } from './ui/state/gameStore';
+import { AmericanFlag } from './ui/kit';
 
 const CHROME_BUTTON = 'border border-rule bg-ink-900 px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-paper/60 transition-colors duration-150 hover:border-brass hover:text-brass';
 
@@ -21,14 +22,28 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-ink-900 text-paper">
-      <div className="fixed right-3 top-3 z-40 flex gap-2">
-        <button type="button" onClick={toggle} className={CHROME_BUTTON}>
-          {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-        </button>
-        <button type="button" onClick={() => setSaveMenuOpen(true)} className={CHROME_BUTTON}>
-          Save / Load
-        </button>
-      </div>
+      {/* The masthead — sits in normal flow above every screen, so it never
+          floats over a screen's own top-left/top-right content. */}
+      <header className="sticky top-0 z-40 bg-ink-900">
+        <div className="flex items-center justify-between px-3 py-2">
+          <AmericanFlag width={36} />
+          <div className="flex gap-2">
+            <button type="button" onClick={toggle} className={CHROME_BUTTON}>
+              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            </button>
+            <button type="button" onClick={() => setSaveMenuOpen(true)} className={CHROME_BUTTON}>
+              Save / Load
+            </button>
+          </div>
+        </div>
+        {/* Old Glory, top edge — the one place stripes-as-decoration are allowed. */}
+        <div className="flex h-1.5 w-full" aria-hidden="true">
+          <div className="h-full flex-1 bg-flag" />
+          <div className="h-full flex-1 bg-parchment" />
+          <div className="h-full flex-1 bg-union" />
+        </div>
+      </header>
+
       {saveMenuOpen && <SaveLoadMenu onClose={() => setSaveMenuOpen(false)} />}
       {renderScreen()}
     </div>
