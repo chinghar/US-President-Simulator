@@ -5,10 +5,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT_CLASSES: Record<NonNullable<ButtonProps['variant']>, string> = {
-  primary: 'bg-seal text-paper hover:brightness-110 disabled:bg-rule disabled:text-paper/40',
+  primary: 'bg-seal text-parchment hover:brightness-110 disabled:bg-rule disabled:text-paper/40',
   secondary: 'border border-rule text-paper hover:border-paper disabled:border-rule disabled:text-paper/30',
   ghost: 'text-paper/70 hover:text-paper disabled:text-paper/30',
-  danger: 'border border-flag text-flag hover:bg-flag hover:text-paper',
+  danger: 'border border-flag text-flag hover:bg-flag hover:text-parchment',
 };
 
 /** Sentence case, names the exact action ("Sign the bill," not "Submit"). */

@@ -10,6 +10,7 @@ export default {
         },
         rule: 'var(--rule)',
         paper: 'var(--paper)',
+        parchment: 'var(--parchment)',
         seal: 'var(--seal)',
         brass: 'var(--brass)',
         union: 'var(--union)',
