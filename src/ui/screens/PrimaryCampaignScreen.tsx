@@ -92,7 +92,12 @@ export function PrimaryCampaignScreen() {
           ) : null}
 
           {debate && debatePending && (
-            <DebatePanel debate={debate} selectedAnswerId={debateAnswerId} onSelect={setDebateAnswerId} />
+            <DebatePanel
+              debate={debate}
+              selectedAnswerId={debateAnswerId}
+              onSelect={setDebateAnswerId}
+              hypothetical={game.isRealCandidateMode}
+            />
           )}
 
           <Panel>

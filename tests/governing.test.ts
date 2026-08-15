@@ -5,6 +5,7 @@ import {
   createInitialEconomy,
   createInitialGoverningState,
   createInitialGoverningGameState,
+  createPlayerFromRealCandidate,
   getPendingCrisisEvents,
 } from '../src/engine';
 import { createInitialStakeholderStates } from '../src/data/stakeholders';
@@ -260,5 +261,33 @@ describe('starting straight as president', () => {
     });
     const state = createInitialGoverningGameState({ player, positions: neutralPositions() });
     expect(state.phase).toBe('governing');
+  });
+});
+
+describe('real-candidate mode', () => {
+  it('never surfaces a scandal-category crisis event, across many seeds and months', () => {
+    let sawScandalWithModeOff = false;
+    for (let seed = 1; seed <= 200; seed++) {
+      for (let month = 1; month <= 6; month++) {
+        const normal = governingState(seed, { month, year: 2029 });
+        const restricted = { ...normal, isRealCandidateMode: true };
+        expect(getPendingCrisisEvents(restricted).some((e) => e.category === 'scandal')).toBe(false);
+        if (getPendingCrisisEvents(normal).some((e) => e.category === 'scandal')) sawScandalWithModeOff = true;
+      }
+    }
+    // Sanity check: the scandal category does occur when the flag is off,
+    // so the assertions above are actually exercising the filter.
+    expect(sawScandalWithModeOff).toBe(true);
+  });
+
+  it('createPlayerFromRealCandidate assigns no traits', () => {
+    const player = createPlayerFromRealCandidate({
+      name: 'Test Official',
+      age: 55,
+      homeState: 'OH',
+      party: 'independent',
+      priorOffice: 'senator',
+    });
+    expect(player.traits).toEqual([]);
   });
 });

@@ -1,9 +1,10 @@
 import { create } from 'zustand';
-import { createCustomPlayer, createPlayerFromFigure, type CustomCharacterInput } from '../../engine/character';
+import { createCustomPlayer, createPlayerFromFigure, createPlayerFromRealCandidate, type CustomCharacterInput } from '../../engine/character';
 import { advanceGeneralTurn, selectRunningMate, type AdvanceGeneralTurnInput } from '../../engine/general';
 import { advanceGoverningTurn, type AdvanceGoverningTurnInput } from '../../engine/governing';
 import { createInitialGameState, createInitialGoverningGameState } from '../../engine/initial-state';
 import { advancePrimaryTurn, type AdvancePrimaryTurnInput } from '../../engine/primary';
+import type { RealCandidate } from '../../data/real-candidates';
 import type { AxisPositions, Figure, GameState, VpCandidate } from '../../engine/types';
 
 export type StartMode = 'campaign' | 'president';
@@ -13,6 +14,7 @@ interface GameStore {
   electionNightAcknowledged: boolean;
   startCustomGame: (input: CustomCharacterInput, positions: AxisPositions, mode?: StartMode) => void;
   startFigureGame: (figure: Figure, mode?: StartMode) => void;
+  startRealCandidateGame: (candidate: RealCandidate, positions: AxisPositions, mode?: StartMode) => void;
   advancePrimary: (input: AdvancePrimaryTurnInput) => void;
   selectVp: (vp: VpCandidate) => void;
   advanceGeneral: (input: AdvanceGeneralTurnInput) => void;
@@ -43,6 +45,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
       mode === 'president'
         ? createInitialGoverningGameState({ player, positions: figure.startingPositions, seed })
         : createInitialGameState({ player, positions: figure.startingPositions, seed });
+    set({ game, electionNightAcknowledged: false });
+  },
+
+  startRealCandidateGame: (candidate, positions, mode = 'campaign') => {
+    const player = createPlayerFromRealCandidate(candidate);
+    const seed = Date.now() & 0x7fffffff;
+    const game =
+      mode === 'president'
+        ? createInitialGoverningGameState({ player, positions, seed, isRealCandidateMode: true })
+        : createInitialGameState({ player, positions, seed, isRealCandidateMode: true });
     set({ game, electionNightAcknowledged: false });
   },
 

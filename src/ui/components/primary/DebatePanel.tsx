@@ -5,12 +5,23 @@ interface DebatePanelProps {
   debate: DebateEvent;
   selectedAnswerId: string | null;
   onSelect: (answerId: string) => void;
+  /** True in real-candidate mode: renders options as labeled hypothetical
+   * strategy choices ("Debate response: ...") rather than as an attributed
+   * quotation, and drops the "moderator asks" dialogue framing. */
+  hypothetical?: boolean;
 }
 
-export function DebatePanel({ debate, selectedAnswerId, onSelect }: DebatePanelProps) {
+export function DebatePanel({ debate, selectedAnswerId, onSelect, hypothetical }: DebatePanelProps) {
   return (
-    <Panel title={`Debate: ${debate.name}`}>
-      <p className="text-small text-paper/80">{debate.question}</p>
+    <Panel title={hypothetical ? `Simulated debate: ${debate.name}` : `Debate: ${debate.name}`}>
+      <p className="text-small text-paper/80">
+        {hypothetical ? `Topic: ${debate.question}` : debate.question}
+      </p>
+      {hypothetical && (
+        <p className="text-[13px] text-paper/50">
+          Choose how your campaign responds in this simulated debate — a gameplay choice, not a quotation.
+        </p>
+      )}
       <div className="space-y-2">
         {debate.answers.map((answer) => (
           <button
@@ -22,7 +33,7 @@ export function DebatePanel({ debate, selectedAnswerId, onSelect }: DebatePanelP
               selectedAnswerId === answer.id ? 'border-seal bg-seal text-parchment' : 'border-rule text-paper/70 hover:border-paper/50',
             ].join(' ')}
           >
-            {answer.label}
+            {hypothetical ? `Debate response: ${answer.label}` : answer.label}
           </button>
         ))}
       </div>

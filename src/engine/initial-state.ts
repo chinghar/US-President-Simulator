@@ -33,6 +33,7 @@ export interface CreateInitialGameStateOptions {
   player?: Partial<PlayerCharacter>;
   positions?: Partial<AxisPositions>;
   startDate?: GameDate;
+  isRealCandidateMode?: boolean;
 }
 
 export function createInitialGameState(options: CreateInitialGameStateOptions = {}): GameState {
@@ -61,6 +62,7 @@ export function createInitialGameState(options: CreateInitialGameStateOptions = 
     primary,
     general,
     governing: null,
+    isRealCandidateMode: options.isRealCandidateMode,
   };
 }
 
@@ -93,5 +95,6 @@ export function createInitialGoverningGameState(options: CreateInitialGameStateO
     primary: null,
     general: null,
     governing: createInitialGoverningState(),
+    isRealCandidateMode: options.isRealCandidateMode,
   };
 }

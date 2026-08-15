@@ -604,6 +604,11 @@ export interface GameState {
   general: GeneralState | null;
   /** Non-null once phase reaches 'governing'. */
   governing: GoverningState | null;
+  /** True when the player is playing as a real public figure (see
+   * data/real-candidates.ts). Gates a restricted content set: no scandal/
+   * personal-conduct crisis events, and debates render as hypothetical
+   * simulated-strategy choices rather than attributed quotes. */
+  isRealCandidateMode?: boolean;
 }
 
 export function clamp(value: number, min: number, max: number): number {
