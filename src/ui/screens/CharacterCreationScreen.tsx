@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CustomCharacterForm } from './CustomCharacterForm';
 import { FigureGallery } from './FigureGallery';
-import { Eyebrow, PresidentialSeal } from '../kit';
+import { AmericanFlag, Eyebrow, PresidentialSeal } from '../kit';
 
 type Tab = 'figure' | 'custom';
 
@@ -11,6 +11,7 @@ export function CharacterCreationScreen() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
       <header className="mb-8 flex items-center gap-4">
+        <AmericanFlag width={64} className="shrink-0" />
         <PresidentialSeal size={48} />
         <div>
           <Eyebrow>2028</Eyebrow>

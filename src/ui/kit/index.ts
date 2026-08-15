@@ -1,3 +1,4 @@
+export * from './AmericanFlag';
 export * from './AnimatedNumber';
 export * from './Button';
 export * from './CornerRosette';
