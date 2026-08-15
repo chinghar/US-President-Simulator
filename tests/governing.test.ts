@@ -10,12 +10,13 @@ import {
 } from '../src/engine';
 import { createInitialStakeholderStates } from '../src/data/stakeholders';
 import { BALANCE } from '../src/data/balance';
+import { REAL_CANDIDATES } from '../src/data/real-candidates';
 import { BILLS } from '../src/data/bills';
 import { EXECUTIVE_ORDERS } from '../src/data/executive-orders';
 import { EVENTS, assertEventsValidInDev } from '../src/data/events';
 import { getAllTradeoffErrors } from '../src/engine/validators';
 import type { AdvanceGoverningTurnInput } from '../src/engine/governing';
-import type { GameState } from '../src/engine/types';
+import { ISSUE_AXES, type GameState } from '../src/engine/types';
 
 function neutralPositions() {
   return {
@@ -289,5 +290,13 @@ describe('real-candidate mode', () => {
       priorOffice: 'senator',
     });
     expect(player.traits).toEqual([]);
+  });
+
+  it('real-candidate starting positions stay well short of the +/-100 extremes', () => {
+    for (const candidate of REAL_CANDIDATES) {
+      for (const axis of ISSUE_AXES) {
+        expect(Math.abs(candidate.startingPositions[axis])).toBeLessThanOrEqual(40);
+      }
+    }
   });
 });
