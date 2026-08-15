@@ -354,6 +354,31 @@ export interface CabinetAppointmentResult {
   decision: Decision | null;
 }
 
+/** Pure, deterministic confirmation-odds math (no RNG) — split out from
+ * resolveCabinetAppointment so it's directly testable. Confirmation follows
+ * the same shape as a Senate vote, but with its own, much friendlier
+ * parameters: real-world cabinet nominees are confirmed the vast majority
+ * of the time — the Senate defers to a president's staffing picks even
+ * across the aisle, absent a real controversy. Only an appointee near the
+ * ideological extremes, facing a heavily hostile Senate, carries
+ * meaningful confirmation risk. */
+export function cabinetConfirmationOdds(ideology: number, congress: CongressComposition) {
+  const b = BALANCE.governing;
+  const demProb = clamp(
+    b.CABINET_CONFIRMATION_BASE_PROBABILITY - (ideology / b.CONFIRMATION_IDEOLOGY_SCALE) * b.CABINET_CONFIRMATION_ALIGNMENT_WEIGHT,
+    0.05,
+    0.99,
+  );
+  const repProb = clamp(
+    b.CABINET_CONFIRMATION_BASE_PROBABILITY + (ideology / b.CONFIRMATION_IDEOLOGY_SCALE) * b.CABINET_CONFIRMATION_ALIGNMENT_WEIGHT,
+    0.05,
+    0.99,
+  );
+  const expectedYes = congress.senateDem * demProb + congress.senateRep * repProb + congress.senateInd * 0.7;
+  const totalVotes = congress.senateDem + congress.senateRep + congress.senateInd;
+  return { demProb, repProb, expectedYes, totalVotes };
+}
+
 export function resolveCabinetAppointment(
   positionId: CabinetPositionId,
   appointeeId: string,
@@ -364,21 +389,8 @@ export function resolveCabinetAppointment(
   const appointee = CABINET_APPOINTEES.find((a) => a.id === appointeeId)!;
   const b = BALANCE.governing;
 
-  // Confirmation follows the same shape as a Senate vote: the appointee's
-  // ideology stands in for "the bill," scored against each party's caucus.
-  const demProb = clamp(
-    b.VOTE_BASE_PROBABILITY - (appointee.ideology / b.CONFIRMATION_IDEOLOGY_SCALE) * b.VOTE_ALIGNMENT_WEIGHT,
-    0.05,
-    0.95,
-  );
-  const repProb = clamp(
-    b.VOTE_BASE_PROBABILITY + (appointee.ideology / b.CONFIRMATION_IDEOLOGY_SCALE) * b.VOTE_ALIGNMENT_WEIGHT,
-    0.05,
-    0.95,
-  );
-  const expectedYes = congress.senateDem * demProb + congress.senateRep * repProb + congress.senateInd * 0.5;
-  const totalVotes = congress.senateDem + congress.senateRep + congress.senateInd;
-  const noise = cursor.centered(b.VOTE_NOISE_MAGNITUDE) * totalVotes;
+  const { expectedYes, totalVotes } = cabinetConfirmationOdds(appointee.ideology, congress);
+  const noise = cursor.centered(b.CABINET_CONFIRMATION_NOISE_MAGNITUDE) * totalVotes;
   const yesVotes = Math.round(clamp(expectedYes + noise, 0, totalVotes));
   const confirmed = yesVotes >= b.SENATE_MAJORITY;
 
@@ -560,7 +572,10 @@ export function resolveMidterms(gameState: GameState, congress: CongressComposit
 // ---------------------------------------------------------------------------
 
 export interface AdvanceGoverningTurnInput {
-  cabinetAppointment?: { positionId: CabinetPositionId; appointeeId: string };
+  /** One or more nominations to resolve this month — the action budget
+   * (see ACTION_BUDGET_PER_MONTH) is what actually limits how many are
+   * affordable, not this shape. */
+  cabinetAppointments?: { positionId: CabinetPositionId; appointeeId: string }[];
   proposedBill?: { billId: string; concessionLevel: number; capitalSpent: number };
   executiveOrder?: { orderId: string };
   /** eventId -> chosen option id, for every event returned by getPendingCrisisEvents this month. */
@@ -607,10 +622,11 @@ export function advanceGoverningTurn(gameState: GameState, input: AdvanceGoverni
     notableLabel = event.title;
   }
 
-  // 2. Cabinet appointment.
+  // 2. Cabinet appointments — any number in the same month, each resolved
+  // independently against the same starting Senate (one nomination doesn't
+  // affect another's odds).
   let cabinet = { ...governing.cabinet };
-  if (input.cabinetAppointment) {
-    const { positionId, appointeeId } = input.cabinetAppointment;
+  for (const { positionId, appointeeId } of input.cabinetAppointments ?? []) {
     const result = resolveCabinetAppointment(positionId, appointeeId, governing.congress, cursor, gameState.monthIndex);
     cabinet = { ...cabinet, [positionId]: result.appointment };
     if (result.decision) {

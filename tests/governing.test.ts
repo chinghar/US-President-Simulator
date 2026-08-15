@@ -16,7 +16,7 @@ import { EXECUTIVE_ORDERS } from '../src/data/executive-orders';
 import { EVENTS, assertEventsValidInDev } from '../src/data/events';
 import { CABINET_APPOINTEES } from '../src/data/cabinet';
 import { getAllTradeoffErrors } from '../src/engine/validators';
-import { ambientCabinetEffects, cabinetEffectiveness, resolveCabinetAppointment } from '../src/engine/governing';
+import { ambientCabinetEffects, cabinetConfirmationOdds, cabinetEffectiveness, resolveCabinetAppointment } from '../src/engine/governing';
 import { RngCursor } from '../src/engine/rng';
 import type { AdvanceGoverningTurnInput } from '../src/engine/governing';
 import { ISSUE_AXES, type GameState } from '../src/engine/types';
@@ -355,20 +355,30 @@ describe('cabinet: competence, ideology, and loyalty all matter', () => {
     expect(decisions[0].personaEffects.union_households).toBeCloseTo(4 * effectiveness * BALANCE.governing.CABINET_AMBIENT_PERSONA_SCALE, 6);
   });
 
-  it('ideology still drives confirmation odds, independent of loyalty', () => {
-    // A heavily Democratic Senate — an appointee whose ideology aligns with
-    // that majority should be confirmed far more often than one who doesn't,
-    // regardless of either appointee's loyalty rating.
+  it('ideology still shifts confirmation odds directionally, independent of loyalty', () => {
+    // Pure math, no RNG: a heavily Democratic Senate should always compute
+    // a higher expected yes-vote share for a left-leaning nominee than a
+    // right-leaning one, even though (per the next test) both usually clear
+    // the majority threshold either way.
     const congress = { houseDem: 300, houseRep: 130, houseInd: 5, senateDem: 80, senateRep: 20, senateInd: 0 };
-    let alignedConfirmed = 0;
-    let misalignedConfirmed = 0;
+    const aligned = cabinetConfirmationOdds(-40, congress); // e.g. Alan Frost
+    const misaligned = cabinetConfirmationOdds(35, congress); // e.g. Rebecca Stanton
+    expect(aligned.expectedYes).toBeGreaterThan(misaligned.expectedYes);
+  });
+
+  it('nearly all appointments succeed, matching real-world confirmation norms', () => {
+    // Even the most ideologically extreme appointee in the current roster,
+    // facing a Senate composition heavily hostile to them, is confirmed the
+    // vast majority of the time — this is the point of the retuned
+    // parameters, not an edge case to guard against.
+    const hostileCongress = { houseDem: 300, houseRep: 130, houseInd: 5, senateDem: 90, senateRep: 10, senateInd: 0 };
+    let confirmedCount = 0;
     const trials = 200;
     for (let seed = 1; seed <= trials; seed++) {
-      const aligned = resolveCabinetAppointment('energy', 'alan_frost', congress, new RngCursor(seed), 0); // ideology -40
-      const misaligned = resolveCabinetAppointment('energy', 'rebecca_stanton', congress, new RngCursor(seed + 100000), 0); // ideology +35
-      if (aligned.appointment.confirmed) alignedConfirmed++;
-      if (misaligned.appointment.confirmed) misalignedConfirmed++;
+      // Rebecca Stanton: ideology +35, facing a 90-10 Democratic Senate.
+      const result = resolveCabinetAppointment('energy', 'rebecca_stanton', hostileCongress, new RngCursor(seed), 0);
+      if (result.appointment.confirmed) confirmedCount++;
     }
-    expect(alignedConfirmed).toBeGreaterThan(misalignedConfirmed);
+    expect(confirmedCount / trials).toBeGreaterThan(0.9);
   });
 });
