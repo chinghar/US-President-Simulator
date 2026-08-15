@@ -30,20 +30,25 @@ export function CrisisEventPanel({ event, selectedOptionId, onSelect }: CrisisEv
       </Eyebrow>
       <p className="text-small text-paper/80">{event.description}</p>
       <div className="space-y-2">
-        {event.options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => onSelect(option.id)}
-            className={[
-              'w-full border px-3 py-2 text-left text-small transition-colors duration-150',
-              selectedOptionId === option.id ? 'border-flag bg-flag/10 text-paper' : 'border-rule text-paper/70 hover:border-paper/50',
-            ].join(' ')}
-          >
-            <div className="font-medium">{option.label}</div>
-            {option.description && <div className="mt-0.5 text-[13px] text-paper/50">{option.description}</div>}
-          </button>
-        ))}
+        {event.options.map((option) => {
+          const selected = selectedOptionId === option.id;
+          return (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onSelect(option.id)}
+              className={[
+                'w-full border px-3 py-2 text-left text-small transition-colors duration-150',
+                selected ? 'border-flag bg-flag text-parchment' : 'border-rule text-paper/70 hover:border-paper/50',
+              ].join(' ')}
+            >
+              <div className="font-medium">{option.label}</div>
+              {option.description && (
+                <div className={`mt-0.5 text-[13px] ${selected ? 'text-parchment/80' : 'text-paper/50'}`}>{option.description}</div>
+              )}
+            </button>
+          );
+        })}
       </div>
       {selectedOptionId ? (
         <EffectsPreviewPanel decision={event.options.find((o) => o.id === selectedOptionId)!} />
