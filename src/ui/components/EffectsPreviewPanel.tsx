@@ -1,4 +1,5 @@
 import { formatRange, previewPersonaEffects } from '../lib/effectsPreview';
+import { Eyebrow } from '../kit';
 import type { Decision } from '../../engine/types';
 
 interface EffectsPreviewPanelProps {
@@ -13,13 +14,13 @@ export function EffectsPreviewPanel({ decision, concessionScalable }: EffectsPre
   if (effects.length === 0) return null;
 
   return (
-    <div className="space-y-1 rounded-md border border-navy-700 bg-navy-950 p-2.5">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Projected Impact (estimate)</p>
+    <div className="space-y-1.5 border border-rule bg-ink-900 p-2.5">
+      <Eyebrow>Projected impact, estimate</Eyebrow>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-3">
         {effects.map((e) => (
-          <div key={e.personaId} className="flex justify-between text-xs">
-            <span className="truncate text-slate-400">{e.name}</span>
-            <span className={e.min + e.max >= 0 ? 'text-emerald-400' : 'text-red-400'}>{formatRange(e.min, e.max)}</span>
+          <div key={e.personaId} className="flex justify-between text-[13px]">
+            <span className="truncate text-paper/60">{e.name}</span>
+            <span className={`font-mono ${e.min + e.max >= 0 ? 'text-seal' : 'text-flag'}`}>{formatRange(e.min, e.max)}</span>
           </div>
         ))}
       </div>

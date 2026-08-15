@@ -9,6 +9,7 @@ import {
   saveGameToSlot,
 } from '../lib/saveGame';
 import { useGameStore } from '../state/gameStore';
+import { Button, Eyebrow, Rule } from '../kit';
 
 const MONTH_NAMES = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const PHASE_LABEL: Record<string, string> = { primary: 'Primary', general: 'General', governing: 'Governing' };
@@ -62,15 +63,12 @@ export function SaveLoadMenu({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
-      <div
-        className="w-full max-w-lg rounded-lg border border-navy-700 bg-navy-900 p-5 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+      <div className="w-full max-w-lg border border-rule bg-ink-700 p-5" onClick={(e) => e.stopPropagation()}>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Save / Load</h2>
-          <button type="button" onClick={onClose} className="text-slate-500 hover:text-slate-300">
-            ✕
+          <Eyebrow>Save / load</Eyebrow>
+          <button type="button" onClick={onClose} className="text-paper/50 hover:text-flag">
+            Close
           </button>
         </div>
 
@@ -78,29 +76,29 @@ export function SaveLoadMenu({ onClose }: { onClose: () => void }) {
           {Array.from({ length: SAVE_SLOT_COUNT }, (_, i) => i + 1).map((slot) => {
             const summary = slots[slot - 1];
             return (
-              <div key={slot} className="flex items-center justify-between rounded-md border border-navy-700 bg-navy-950 px-3 py-2">
-                <div className="text-sm">
-                  <p className="text-slate-300">Slot {slot}</p>
+              <div key={slot} className="flex items-center justify-between border border-rule bg-ink-900 px-3 py-2">
+                <div className="text-small">
+                  <p className="text-paper">Slot {slot}</p>
                   {summary ? (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-[13px] text-paper/50">
                       {summary.playerName} · {PHASE_LABEL[summary.phase] ?? summary.phase} · {MONTH_NAMES[summary.month]} {summary.year}
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-600">Empty</p>
+                    <p className="text-[13px] text-paper/30">Empty</p>
                   )}
                 </div>
-                <div className="flex gap-2 text-xs">
+                <div className="flex gap-2 text-[13px]">
                   {game && (
-                    <button type="button" onClick={() => handleSave(slot)} className="rounded border border-navy-600 px-2 py-1 text-slate-300 hover:border-sky-500 hover:text-sky-300">
+                    <button type="button" onClick={() => handleSave(slot)} className="border border-rule px-2 py-1 text-paper/70 hover:border-brass hover:text-brass">
                       Save
                     </button>
                   )}
                   {summary && (
                     <>
-                      <button type="button" onClick={() => handleLoad(slot)} className="rounded border border-navy-600 px-2 py-1 text-slate-300 hover:border-sky-500 hover:text-sky-300">
+                      <button type="button" onClick={() => handleLoad(slot)} className="border border-rule px-2 py-1 text-paper/70 hover:border-seal hover:text-seal">
                         Load
                       </button>
-                      <button type="button" onClick={() => handleDelete(slot)} className="rounded border border-navy-600 px-2 py-1 text-slate-400 hover:border-red-500 hover:text-red-400">
+                      <button type="button" onClick={() => handleDelete(slot)} className="border border-rule px-2 py-1 text-paper/50 hover:border-flag hover:text-flag">
                         Delete
                       </button>
                     </>
@@ -111,23 +109,16 @@ export function SaveLoadMenu({ onClose }: { onClose: () => void }) {
           })}
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-navy-700 pt-4">
-          <button
-            type="button"
-            disabled={!game}
-            onClick={() => game && exportGameAsJson(game)}
-            className="rounded-md border border-navy-600 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-400 disabled:cursor-not-allowed disabled:text-slate-600"
-          >
+        <Rule className="my-4" />
+
+        <div className="flex items-center justify-between">
+          <Button variant="secondary" disabled={!game} onClick={() => game && exportGameAsJson(game)}>
             Export JSON
-          </button>
+          </Button>
           <div>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="rounded-md border border-navy-600 px-3 py-1.5 text-xs text-slate-300 hover:border-slate-400"
-            >
+            <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
               Import JSON
-            </button>
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
@@ -141,7 +132,7 @@ export function SaveLoadMenu({ onClose }: { onClose: () => void }) {
             />
           </div>
         </div>
-        {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+        {error && <p className="mt-2 text-[13px] text-flag">{error}</p>}
       </div>
     </div>
   );

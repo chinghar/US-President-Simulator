@@ -20,16 +20,16 @@ export function TraitPicker({ selected, onToggle, max = 3 }: TraitPickerProps) {
             disabled={disabled}
             onClick={() => onToggle(trait.id)}
             className={[
-              'rounded-md border px-3 py-2 text-left text-sm transition-colors',
+              'border px-3 py-2 text-left text-small transition-colors duration-150',
               isSelected
-                ? 'border-sky-500 bg-sky-500/10 text-sky-100'
+                ? 'border-seal bg-seal/10 text-paper'
                 : disabled
-                  ? 'border-navy-700 bg-navy-900/40 text-slate-600 cursor-not-allowed'
-                  : 'border-navy-700 bg-navy-900 text-slate-300 hover:border-slate-500',
+                  ? 'cursor-not-allowed border-rule/50 text-paper/30'
+                  : 'border-rule text-paper/70 hover:border-paper/50',
             ].join(' ')}
           >
-            <div className="font-semibold">{trait.name}</div>
-            <div className="mt-0.5 text-xs text-slate-400">{trait.description}</div>
+            <div className="font-medium">{trait.name}</div>
+            <div className="mt-0.5 text-[13px] text-paper/50">{trait.description}</div>
           </button>
         );
       })}

@@ -2,25 +2,26 @@ import { useState } from 'react';
 import { ISSUE_LIST } from '../../../data/issues';
 import { STATES } from '../../../data/states';
 import type { IssueAxisId, PrimaryActionType, PrimaryCandidate, StateId } from '../../../engine/types';
+import { Button, Eyebrow } from '../../kit';
 
 const STAKEHOLDER_OPTIONS = [
-  { id: 'party_establishment' as const, name: 'Party Establishment' },
-  { id: 'donor_class' as const, name: 'Donor Class' },
-  { id: 'labor_unions' as const, name: 'Labor Unions' },
-  { id: 'business_lobby' as const, name: 'Business Lobby' },
+  { id: 'party_establishment' as const, name: 'Party establishment' },
+  { id: 'donor_class' as const, name: 'Donor class' },
+  { id: 'labor_unions' as const, name: 'Labor unions' },
+  { id: 'business_lobby' as const, name: 'Business lobby' },
 ];
 
 type ActionKind = PrimaryActionType['kind'];
 
 const ACTION_LABELS: Record<ActionKind, string> = {
-  campaign: 'Campaign in a State',
+  campaign: 'Campaign in a state',
   fundraise: 'Fundraise',
-  ad_positive: 'Run a Positive Ad',
-  ad_attack: 'Run an Attack Ad',
-  debate_prep: 'Debate Prep',
-  endorsement: 'Court an Endorsement',
-  interview: 'Give an Interview',
-  shift_position: 'Shift a Policy Position',
+  ad_positive: 'Run a positive ad',
+  ad_attack: 'Run an attack ad',
+  debate_prep: 'Debate prep',
+  endorsement: 'Court an endorsement',
+  interview: 'Give an interview',
+  shift_position: 'Shift a policy position',
 };
 
 function describeAction(action: PrimaryActionType, rivals: PrimaryCandidate[]): string {
@@ -53,6 +54,8 @@ interface ActionBuilderProps {
   statesInPlay: StateId[];
   rivals: PrimaryCandidate[];
 }
+
+const SELECT_CLASS = 'w-full border border-rule bg-ink-900 px-2 py-1.5 text-small text-paper outline-none focus-visible:border-brass';
 
 export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals }: ActionBuilderProps) {
   const [kind, setKind] = useState<ActionKind>('fundraise');
@@ -102,21 +105,16 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-          Monthly Actions ({actions.length}/{budget})
-        </h3>
-      </div>
+      <Eyebrow>
+        Monthly actions ({actions.length}/{budget})
+      </Eyebrow>
 
       {actions.length > 0 && (
         <ul className="space-y-1">
           {actions.map((action, i) => (
-            <li
-              key={i}
-              className="flex items-center justify-between rounded-md border border-navy-700 bg-navy-900 px-3 py-1.5 text-sm text-slate-300"
-            >
+            <li key={i} className="flex items-center justify-between border border-rule bg-ink-900 px-3 py-1.5 text-small text-paper/70">
               <span>{describeAction(action, rivals)}</span>
-              <button type="button" onClick={() => removeAction(i)} className="text-slate-500 hover:text-red-400">
+              <button type="button" onClick={() => removeAction(i)} className="text-paper/40 hover:text-flag">
                 Remove
               </button>
             </li>
@@ -125,12 +123,8 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
       )}
 
       {!full && (
-        <div className="space-y-2 rounded-md border border-navy-700 bg-navy-900/60 p-3">
-          <select
-            value={kind}
-            onChange={(e) => setKind(e.target.value as ActionKind)}
-            className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-          >
+        <div className="space-y-2 border border-rule bg-ink-900 p-3">
+          <select value={kind} onChange={(e) => setKind(e.target.value as ActionKind)} className={SELECT_CLASS}>
             {availableKinds.map((k) => (
               <option key={k} value={k}>
                 {ACTION_LABELS[k]}
@@ -139,12 +133,8 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
           </select>
 
           {(kind === 'campaign' || kind === 'ad_positive' || kind === 'ad_attack') && (
-            <select
-              value={stateId}
-              onChange={(e) => setStateId(e.target.value as StateId)}
-              className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-            >
-              <option value="">Choose a state in play...</option>
+            <select value={stateId} onChange={(e) => setStateId(e.target.value as StateId)} className={SELECT_CLASS}>
+              <option value="">Choose a state in play</option>
               {statesInPlay.map((id) => (
                 <option key={id} value={id}>
                   {STATES[id].name}
@@ -154,12 +144,8 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
           )}
 
           {kind === 'ad_attack' && (
-            <select
-              value={targetId}
-              onChange={(e) => setTargetId(e.target.value)}
-              className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-            >
-              <option value="">Choose a target...</option>
+            <select value={targetId} onChange={(e) => setTargetId(e.target.value)} className={SELECT_CLASS}>
+              <option value="">Choose a target</option>
               {rivals.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
@@ -169,11 +155,7 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
           )}
 
           {kind === 'endorsement' && (
-            <select
-              value={stakeholderId}
-              onChange={(e) => setStakeholderId(e.target.value as typeof stakeholderId)}
-              className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-            >
+            <select value={stakeholderId} onChange={(e) => setStakeholderId(e.target.value as typeof stakeholderId)} className={SELECT_CLASS}>
               {STAKEHOLDER_OPTIONS.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -184,22 +166,14 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
 
           {kind === 'shift_position' && (
             <div className="flex gap-2">
-              <select
-                value={axis}
-                onChange={(e) => setAxis(e.target.value as IssueAxisId)}
-                className="flex-1 rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-              >
+              <select value={axis} onChange={(e) => setAxis(e.target.value as IssueAxisId)} className={`flex-1 ${SELECT_CLASS}`}>
                 {ISSUE_LIST.map((issue) => (
                   <option key={issue.id} value={issue.id}>
                     {issue.name}
                   </option>
                 ))}
               </select>
-              <select
-                value={delta}
-                onChange={(e) => setDelta(Number(e.target.value))}
-                className="w-28 rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-              >
+              <select value={delta} onChange={(e) => setDelta(Number(e.target.value))} className={`w-28 ${SELECT_CLASS}`}>
                 {[-30, -20, -10, 10, 20, 30].map((d) => (
                   <option key={d} value={d}>
                     {d > 0 ? `+${d}` : d}
@@ -209,13 +183,9 @@ export function ActionBuilder({ actions, onChange, budget, statesInPlay, rivals 
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={addAction}
-            className="w-full rounded-md bg-navy-700 px-3 py-1.5 text-sm font-medium text-slate-200 hover:bg-navy-600"
-          >
-            Add Action
-          </button>
+          <Button variant="secondary" className="w-full" onClick={addAction}>
+            Add action
+          </Button>
         </div>
       )}
     </div>

@@ -1,0 +1,17 @@
+/**
+ * The Resolute Desk — palette. CSS custom properties only; no other colors
+ * are used anywhere in the UI. Party colors (--union / --flag) are for DATA
+ * ONLY — never chrome, buttons, or navigation. --brass is restricted to
+ * signatures, seals, and legacy/achievement moments — keep it under 5% of
+ * any given screen.
+ */
+:root {
+  --ink-900: #0e1116; /* base surface, near-black with a blue cast */
+  --ink-700: #1a2028; /* raised panels, cards */
+  --rule: #2e3742; /* hairline dividers, engraved lines */
+  --paper: #ede7d6; /* document surfaces, primary text on dark */
+  --seal: #1f5c3f; /* Treasury green — primary accent: actions, confirmations, positive deltas */
+  --brass: #c9a227; /* secondary accent — signatures, seals, legacy moments only */
+  --union: #2b4a7d; /* Democratic / left-of-center data */
+  --flag: #9b2226; /* Republican / right-of-center data, and danger states */
+}

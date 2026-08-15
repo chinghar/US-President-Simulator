@@ -2,16 +2,17 @@ import { useState } from 'react';
 import { STATES } from '../../../data/states';
 import { SWING_STATES } from '../../../engine/general';
 import { STATE_IDS, type GeneralActionType, type GeneralCandidate, type StateId } from '../../../engine/types';
+import { Button, Eyebrow } from '../../kit';
 
 type ActionKind = GeneralActionType['kind'];
 
 const ACTION_LABELS: Record<ActionKind, string> = {
-  campaign: 'Campaign / Travel to a State',
+  campaign: 'Campaign / travel to a state',
   fundraise: 'Fundraise',
-  ad_positive: 'Run a Positive Ad',
-  ad_attack: 'Run an Attack Ad',
-  debate_prep: 'Debate Prep',
-  interview: 'Give an Interview',
+  ad_positive: 'Run a positive ad',
+  ad_attack: 'Run an attack ad',
+  debate_prep: 'Debate prep',
+  interview: 'Give an interview',
 };
 
 const STATE_OPTIONS: StateId[] = [
@@ -44,6 +45,8 @@ interface GeneralActionBuilderProps {
   budget: number;
   opponents: GeneralCandidate[];
 }
+
+const SELECT_CLASS = 'w-full border border-rule bg-ink-900 px-2 py-1.5 text-small text-paper outline-none focus-visible:border-brass';
 
 export function GeneralActionBuilder({ actions, onChange, budget, opponents }: GeneralActionBuilderProps) {
   const [kind, setKind] = useState<ActionKind>('fundraise');
@@ -81,16 +84,16 @@ export function GeneralActionBuilder({ actions, onChange, budget, opponents }: G
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-        Monthly Actions ({actions.length}/{budget})
-      </h3>
+      <Eyebrow>
+        Monthly actions ({actions.length}/{budget})
+      </Eyebrow>
 
       {actions.length > 0 && (
         <ul className="space-y-1">
           {actions.map((action, i) => (
-            <li key={i} className="flex items-center justify-between rounded-md border border-navy-700 bg-navy-900 px-3 py-1.5 text-sm text-slate-300">
+            <li key={i} className="flex items-center justify-between border border-rule bg-ink-900 px-3 py-1.5 text-small text-paper/70">
               <span>{describeAction(action, opponents)}</span>
-              <button type="button" onClick={() => removeAction(i)} className="text-slate-500 hover:text-red-400">
+              <button type="button" onClick={() => removeAction(i)} className="text-paper/40 hover:text-flag">
                 Remove
               </button>
             </li>
@@ -99,12 +102,8 @@ export function GeneralActionBuilder({ actions, onChange, budget, opponents }: G
       )}
 
       {!full && (
-        <div className="space-y-2 rounded-md border border-navy-700 bg-navy-900/60 p-3">
-          <select
-            value={kind}
-            onChange={(e) => setKind(e.target.value as ActionKind)}
-            className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-          >
+        <div className="space-y-2 border border-rule bg-ink-900 p-3">
+          <select value={kind} onChange={(e) => setKind(e.target.value as ActionKind)} className={SELECT_CLASS}>
             {(Object.keys(ACTION_LABELS) as ActionKind[]).map((k) => (
               <option key={k} value={k}>
                 {ACTION_LABELS[k]}
@@ -113,20 +112,16 @@ export function GeneralActionBuilder({ actions, onChange, budget, opponents }: G
           </select>
 
           {(kind === 'campaign' || kind === 'ad_positive' || kind === 'ad_attack') && (
-            <select
-              value={stateId}
-              onChange={(e) => setStateId(e.target.value as StateId)}
-              className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-            >
-              <option value="">Choose a state...</option>
-              <optgroup label="Swing States">
+            <select value={stateId} onChange={(e) => setStateId(e.target.value as StateId)} className={SELECT_CLASS}>
+              <option value="">Choose a state</option>
+              <optgroup label="Swing states">
                 {SWING_STATES.map((id) => (
                   <option key={id} value={id}>
                     {STATES[id].name}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="All States">
+              <optgroup label="All states">
                 {STATE_OPTIONS.filter((id) => !SWING_STATES.includes(id)).map((id) => (
                   <option key={id} value={id}>
                     {STATES[id].name}
@@ -137,12 +132,8 @@ export function GeneralActionBuilder({ actions, onChange, budget, opponents }: G
           )}
 
           {kind === 'ad_attack' && (
-            <select
-              value={targetId}
-              onChange={(e) => setTargetId(e.target.value)}
-              className="w-full rounded-md border border-navy-700 bg-navy-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:border-sky-500"
-            >
-              <option value="">Choose a target...</option>
+            <select value={targetId} onChange={(e) => setTargetId(e.target.value)} className={SELECT_CLASS}>
+              <option value="">Choose a target</option>
               {opponents.map((o) => (
                 <option key={o.id} value={o.id}>
                   {o.name}
@@ -151,13 +142,9 @@ export function GeneralActionBuilder({ actions, onChange, budget, opponents }: G
             </select>
           )}
 
-          <button
-            type="button"
-            onClick={addAction}
-            className="w-full rounded-md bg-navy-700 px-3 py-1.5 text-sm font-medium text-slate-200 hover:bg-navy-600"
-          >
-            Add Action
-          </button>
+          <Button variant="secondary" className="w-full" onClick={addAction}>
+            Add action
+          </Button>
         </div>
       )}
     </div>

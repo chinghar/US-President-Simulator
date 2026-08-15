@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CABINET_APPOINTEES, CABINET_POSITION_INFO, getCabinetCandidates } from '../../../data/cabinet';
 import { CABINET_POSITION_IDS, type CabinetPositionId, type GoverningState } from '../../../engine/types';
+import { Panel } from '../../kit';
 
 interface CabinetPanelProps {
   cabinet: GoverningState['cabinet'];
@@ -13,8 +14,7 @@ export function CabinetPanel({ cabinet, pendingAppointment, onChange, canAppoint
   const [openPosition, setOpenPosition] = useState<CabinetPositionId | null>(null);
 
   return (
-    <div className="space-y-3 rounded-lg border border-navy-700 bg-navy-900/60 p-4">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Cabinet</h3>
+    <Panel title="Cabinet">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {CABINET_POSITION_IDS.map((positionId) => {
           const appointment = cabinet[positionId];
@@ -22,16 +22,16 @@ export function CabinetPanel({ cabinet, pendingAppointment, onChange, canAppoint
           const isPending = pendingAppointment?.positionId === positionId;
 
           return (
-            <div key={positionId} className="rounded-md border border-navy-700 bg-navy-900 p-2.5 text-sm">
-              <p className="text-xs text-slate-500">{CABINET_POSITION_INFO[positionId].name}</p>
+            <div key={positionId} className="border border-rule p-2.5 text-small">
+              <p className="text-[13px] text-paper/50">{CABINET_POSITION_INFO[positionId].name}</p>
               {appointee ? (
-                <p className={appointment!.confirmed ? 'text-slate-200' : 'text-amber-400'}>
-                  {appointee.name} {appointment!.confirmed ? '' : '(confirmation failed)'}
+                <p className={appointment!.confirmed ? 'text-paper' : 'text-brass'}>
+                  {appointee.name} {appointment!.confirmed ? '' : '— confirmation failed'}
                 </p>
               ) : isPending ? (
-                <p className="text-sky-300">{CABINET_APPOINTEES.find((a) => a.id === pendingAppointment!.appointeeId)?.name} (pending)</p>
+                <p className="text-seal">{CABINET_APPOINTEES.find((a) => a.id === pendingAppointment!.appointeeId)?.name} — pending</p>
               ) : (
-                <p className="text-slate-600">Vacant</p>
+                <p className="text-paper/40">Vacant</p>
               )}
 
               {!appointee && canAppoint && (
@@ -44,9 +44,9 @@ export function CabinetPanel({ cabinet, pendingAppointment, onChange, canAppoint
                         setOpenPosition(null);
                       }}
                       onBlur={() => setOpenPosition(null)}
-                      className="w-full rounded-md border border-navy-700 bg-navy-950 px-2 py-1 text-xs text-slate-100 outline-none focus:border-sky-500"
+                      className="w-full rounded border border-rule bg-ink-900 px-2 py-1 text-[13px] text-paper outline-none focus-visible:border-brass"
                     >
-                      <option value="">Choose a nominee...</option>
+                      <option value="">Choose a nominee</option>
                       {getCabinetCandidates(positionId).map((c) => (
                         <option key={c.id} value={c.id}>
                           {c.name} (competence {c.competence})
@@ -54,7 +54,7 @@ export function CabinetPanel({ cabinet, pendingAppointment, onChange, canAppoint
                       ))}
                     </select>
                   ) : isPending ? (
-                    <button type="button" onClick={() => onChange(null)} className="text-xs text-slate-500 hover:text-red-400">
+                    <button type="button" onClick={() => onChange(null)} className="text-[13px] text-paper/50 hover:text-flag">
                       Cancel
                     </button>
                   ) : (
@@ -62,9 +62,9 @@ export function CabinetPanel({ cabinet, pendingAppointment, onChange, canAppoint
                       type="button"
                       onClick={() => setOpenPosition(positionId)}
                       disabled={!!pendingAppointment && pendingAppointment.positionId !== positionId}
-                      className="text-xs text-sky-400 hover:text-sky-300 disabled:cursor-not-allowed disabled:text-slate-600"
+                      className="text-[13px] text-seal hover:brightness-125 disabled:cursor-not-allowed disabled:text-paper/30"
                     >
-                      Appoint...
+                      Appoint
                     </button>
                   )}
                 </div>
@@ -73,6 +73,6 @@ export function CabinetPanel({ cabinet, pendingAppointment, onChange, canAppoint
           );
         })}
       </div>
-    </div>
+    </Panel>
   );
 }
