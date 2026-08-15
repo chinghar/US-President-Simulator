@@ -95,6 +95,7 @@ export function GeneralCampaignScreen() {
               debate={event}
               selectedAnswerId={eventAnswers[event.id] ?? null}
               onSelect={(answerId) => setEventAnswers((prev) => ({ ...prev, [event.id]: answerId }))}
+              hypothetical={game.isRealCandidateMode}
             />
           ))}
 

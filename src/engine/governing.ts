@@ -292,11 +292,17 @@ function getAppliedDecisionIds(gameState: GameState): Set<string> {
   return ids;
 }
 
+/** Crisis-event categories excluded from real-candidate playthroughs because
+ * they're about the officeholder's (or an appointee's) personal conduct
+ * rather than a governmental/external event — see data/real-candidates.ts. */
+const PERSONAL_CONDUCT_CATEGORIES: CrisisEvent['category'][] = ['scandal'];
+
 function eligibleEvents(gameState: GameState): CrisisEvent[] {
   const governing = gameState.governing;
   if (!governing) return [];
   const appliedIds = getAppliedDecisionIds(gameState);
   return EVENTS.filter((event) => {
+    if (gameState.isRealCandidateMode && PERSONAL_CONDUCT_CATEGORIES.includes(event.category)) return false;
     if (!event.repeatable && governing.triggeredEventIds.includes(event.id)) return false;
     return meetsPrerequisites(event, gameState, appliedIds);
   });

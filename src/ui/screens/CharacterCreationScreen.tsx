@@ -1,15 +1,22 @@
 import { useState } from 'react';
 import { CustomCharacterForm } from './CustomCharacterForm';
 import { FigureGallery } from './FigureGallery';
+import { RealCandidateGallery } from './RealCandidateGallery';
 import { AmericanFlag, Eyebrow, PresidentialSeal } from '../kit';
 import type { StartMode } from '../state/gameStore';
 
-type Tab = 'figure' | 'custom';
+type Tab = 'figure' | 'custom' | 'real';
 
 const MODE_COPY: Record<StartMode, string> = {
   campaign: 'Contest the primary and the general election, month by month, before taking office.',
   president: 'Skip the campaign entirely — take the oath on day one and start governing.',
 };
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'figure', label: 'Choose a figure' },
+  { id: 'custom', label: 'Build a candidate' },
+  { id: 'real', label: '2028 hypothetical candidates' },
+];
 
 export function CharacterCreationScreen() {
   const [tab, setTab] = useState<Tab>('figure');
@@ -56,30 +63,29 @@ export function CharacterCreationScreen() {
         </div>
       </div>
 
-      <div className="mb-8 flex gap-1 border-b border-rule">
-        <button
-          type="button"
-          onClick={() => setTab('figure')}
-          className={[
-            'border-b-2 px-4 py-2 text-small font-medium transition-colors duration-150',
-            tab === 'figure' ? 'border-brass text-paper' : 'border-transparent text-paper/50 hover:text-paper/80',
-          ].join(' ')}
-        >
-          Choose a figure
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab('custom')}
-          className={[
-            'border-b-2 px-4 py-2 text-small font-medium transition-colors duration-150',
-            tab === 'custom' ? 'border-brass text-paper' : 'border-transparent text-paper/50 hover:text-paper/80',
-          ].join(' ')}
-        >
-          Build a candidate
-        </button>
+      <div className="mb-8 flex flex-wrap gap-1 border-b border-rule">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={[
+              'border-b-2 px-4 py-2 text-small font-medium transition-colors duration-150',
+              tab === t.id ? 'border-brass text-paper' : 'border-transparent text-paper/50 hover:text-paper/80',
+            ].join(' ')}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {tab === 'figure' ? <FigureGallery mode={mode} /> : <CustomCharacterForm mode={mode} />}
+      {tab === 'figure' ? (
+        <FigureGallery mode={mode} />
+      ) : tab === 'custom' ? (
+        <CustomCharacterForm mode={mode} />
+      ) : (
+        <RealCandidateGallery mode={mode} />
+      )}
     </div>
   );
 }

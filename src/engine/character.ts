@@ -131,3 +131,33 @@ export function createPlayerFromFigure(figure: Figure): PlayerCharacter {
     baseEnthusiasm: figure.baseEnthusiasm,
   };
 }
+
+/** Same starting stats for every real candidate, deliberately — ranking
+ * real people's name recognition or war chest against one another would be
+ * exactly the kind of subjective, unverified characterization the real-
+ * candidate roster is designed to avoid. No traits either: see
+ * data/real-candidates.ts. */
+const REAL_CANDIDATE_STATS: StartingStats = {
+  nameRecognition: 50,
+  warChest: 5_000_000,
+  partyEstablishmentFavor: 0,
+  baseEnthusiasm: 50,
+};
+
+export function createPlayerFromRealCandidate(candidate: {
+  name: string;
+  age: number;
+  homeState: StateId;
+  party: Party;
+  priorOffice: PriorOffice;
+}): PlayerCharacter {
+  return {
+    name: candidate.name,
+    age: candidate.age,
+    homeState: candidate.homeState,
+    party: candidate.party,
+    priorOffice: candidate.priorOffice,
+    traits: [],
+    ...REAL_CANDIDATE_STATS,
+  };
+}
