@@ -22,14 +22,14 @@ export function TraitPicker({ selected, onToggle, max = 3 }: TraitPickerProps) {
             className={[
               'border px-3 py-2 text-left text-small transition-colors duration-150',
               isSelected
-                ? 'border-seal bg-seal/10 text-paper'
+                ? 'border-seal bg-seal text-parchment'
                 : disabled
                   ? 'cursor-not-allowed border-rule/50 text-paper/30'
                   : 'border-rule text-paper/70 hover:border-paper/50',
             ].join(' ')}
           >
             <div className="font-medium">{trait.name}</div>
-            <div className="mt-0.5 text-[13px] text-paper/50">{trait.description}</div>
+            <div className={`mt-0.5 text-[13px] ${isSelected ? 'text-parchment/80' : 'text-paper/50'}`}>{trait.description}</div>
           </button>
         );
       })}
