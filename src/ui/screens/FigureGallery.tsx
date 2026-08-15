@@ -3,8 +3,10 @@ import { PRIOR_OFFICES } from '../../data/prior-offices';
 import { TRAITS } from '../../data/traits';
 import { STATES } from '../../data/states';
 import { useGameStore } from '../state/gameStore';
+import { Button, Tag } from '../kit';
 
 const PARTY_LABEL: Record<string, string> = { democrat: 'Democrat', republican: 'Republican', independent: 'Independent' };
+const PARTY_TONE: Record<string, 'union' | 'flag' | 'neutral'> = { democrat: 'union', republican: 'flag', independent: 'neutral' };
 
 function formatMoney(value: number): string {
   return `$${(value / 1_000_000).toFixed(1)}M`;
@@ -16,39 +18,33 @@ export function FigureGallery() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {FIGURES.map((figure) => (
-        <div key={figure.id} className="flex flex-col justify-between rounded-lg border border-navy-700 bg-navy-900/60 p-4">
+        <div key={figure.id} className="flex flex-col justify-between border border-rule bg-ink-700 p-4">
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="text-base font-semibold text-slate-100">{figure.name}</h3>
-              <span className="whitespace-nowrap rounded-full border border-navy-600 px-2 py-0.5 text-[11px] text-slate-400">
-                {PARTY_LABEL[figure.party]}
-              </span>
+              <h3 className="font-display text-h3 text-paper">{figure.name}</h3>
+              <Tag tone={PARTY_TONE[figure.party]}>{PARTY_LABEL[figure.party]}</Tag>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-[13px] text-paper/50">
               {PRIOR_OFFICES[figure.priorOffice].name} · {STATES[figure.homeState].name} · Age {figure.age}
             </p>
-            <p className="text-sm text-slate-300">{figure.bio}</p>
+            <p className="text-small text-paper/80">{figure.bio}</p>
             <div className="flex flex-wrap gap-1.5 pt-1">
               {figure.traits.map((traitId) => (
-                <span key={traitId} className="rounded-full bg-sky-500/10 px-2 py-0.5 text-[11px] text-sky-200">
+                <Tag key={traitId} tone="neutral">
                   {TRAITS[traitId].name}
-                </span>
+                </Tag>
               ))}
             </div>
-            <dl className="grid grid-cols-2 gap-x-3 gap-y-1 pt-2 text-xs">
-              <dt className="text-slate-500">Name Rec.</dt>
-              <dd className="text-right tabular-nums text-slate-300">{figure.nameRecognition}/100</dd>
-              <dt className="text-slate-500">War Chest</dt>
-              <dd className="text-right tabular-nums text-slate-300">{formatMoney(figure.warChest)}</dd>
+            <dl className="grid grid-cols-2 gap-x-3 gap-y-1 border-t border-rule pt-2 text-[13px]">
+              <dt className="text-paper/50">Name rec.</dt>
+              <dd className="text-right font-mono text-paper/80">{figure.nameRecognition}/100</dd>
+              <dt className="text-paper/50">War chest</dt>
+              <dd className="text-right font-mono text-paper/80">{formatMoney(figure.warChest)}</dd>
             </dl>
           </div>
-          <button
-            type="button"
-            onClick={() => startFigureGame(figure)}
-            className="mt-4 w-full rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-sky-500"
-          >
+          <Button className="mt-4 w-full" onClick={() => startFigureGame(figure)}>
             Run as {figure.name.split(' ')[0]}
-          </button>
+          </Button>
         </div>
       ))}
     </div>

@@ -1,104 +1,118 @@
-import { STATES, STATE_LIST } from '../../data/states';
+import { useState } from 'react';
+import { STATE_LIST } from '../../data/states';
 import { GRID_COLUMNS, GRID_ROWS, STATE_GRID_POSITIONS } from '../../data/state-grid';
 import type { StateId } from '../../engine/types';
 
 const CELL = 44;
 const GAP = 3;
 const PAD = 4;
+/** Margins at or beyond this magnitude render as a solid fill rather than a
+ * hatch pattern — a period-atlas convention for "decisively called." */
+const SOLID_THRESHOLD = 20;
 
 export interface UsMapProps {
-  /** Fill color for a state's tile. */
-  colorForState: (stateId: StateId) => string;
-  /** Optional short text under the state abbreviation (e.g. an EV count or a margin). */
-  subLabelForState?: (stateId: StateId) => string | null;
+  /** -100 (fully negativeColor) .. +100 (fully positiveColor). 0 = even, no color. */
+  marginForState: (stateId: StateId) => number;
+  /** Defaults to --union — party maps only; the approval map overrides this with --flag. */
+  negativeColor?: string;
+  /** Defaults to --flag — party maps only; the approval map overrides this with --seal. */
+  positiveColor?: string;
   onSelectState?: (stateId: StateId) => void;
+  onHoverState?: (stateId: StateId | null) => void;
   selectedState?: StateId | null;
 }
 
-/** A tile-grid US map — every state gets an equal-size cell rather than its
- * true (wildly unequal) area, the standard readable approach for a 51-region
- * results map. See data/state-grid.ts for the layout. */
-export function UsMap({ colorForState, subLabelForState, onSelectState, selectedState }: UsMapProps) {
+function hatchSpacing(absMargin: number): number {
+  const t = Math.min(absMargin, SOLID_THRESHOLD) / SOLID_THRESHOLD;
+  return 8 - t * 5.5; // sparse (8px) near even, dense (2.5px) approaching the solid threshold
+}
+
+/**
+ * An engraved tile-grid US map: states are filled with diagonal-hairline
+ * hatch patterns whose density encodes margin strength and whose color
+ * reads --union (blue) or --flag (red) — solid fill only past a 20-point
+ * margin. This reads like a period atlas rather than a saturation heatmap,
+ * and keeps close states legible. See data/state-grid.ts for the layout.
+ */
+export function UsMap({
+  marginForState,
+  negativeColor = 'var(--union)',
+  positiveColor = 'var(--flag)',
+  onSelectState,
+  onHoverState,
+  selectedState,
+}: UsMapProps) {
+  const [hovered, setHovered] = useState<StateId | null>(null);
   const width = GRID_COLUMNS * (CELL + GAP) + PAD * 2;
   const height = GRID_ROWS * (CELL + GAP) + PAD * 2;
 
+  function handleHover(stateId: StateId | null) {
+    setHovered(stateId);
+    onHoverState?.(stateId);
+  }
+
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="w-full" role="img" aria-label="Map of US states">
+      <defs>
+        {STATE_LIST.map((state) => {
+          const margin = marginForState(state.id);
+          const abs = Math.abs(margin);
+          const color = margin < 0 ? negativeColor : margin > 0 ? positiveColor : 'var(--rule)';
+          const spacing = hatchSpacing(abs);
+          return (
+            <pattern
+              key={state.id}
+              id={`hatch-${state.id}`}
+              patternUnits="userSpaceOnUse"
+              width={spacing}
+              height={spacing}
+              patternTransform="rotate(45)"
+            >
+              <rect width={spacing} height={spacing} fill="var(--ink-700)" />
+              <line x1="0" y1="0" x2="0" y2={spacing} stroke={color} strokeWidth="1.1" />
+            </pattern>
+          );
+        })}
+      </defs>
+
       {STATE_LIST.map((state) => {
         const pos = STATE_GRID_POSITIONS[state.id];
         const x = PAD + pos.col * (CELL + GAP);
         const y = PAD + pos.row * (CELL + GAP);
-        const fill = colorForState(state.id);
-        const subLabel = subLabelForState?.(state.id);
+        const margin = marginForState(state.id);
+        const abs = Math.abs(margin);
+        const solidColor = margin < 0 ? negativeColor : margin > 0 ? positiveColor : 'var(--rule)';
+        const fill = abs >= SOLID_THRESHOLD ? solidColor : `url(#hatch-${state.id})`;
         const isSelected = selectedState === state.id;
+        const isHovered = hovered === state.id;
 
         return (
           <g
             key={state.id}
             transform={`translate(${x},${y})`}
             onClick={() => onSelectState?.(state.id)}
+            onMouseEnter={() => handleHover(state.id)}
+            onMouseLeave={() => handleHover(null)}
+            onFocus={() => handleHover(state.id)}
+            onBlur={() => handleHover(null)}
+            tabIndex={onSelectState ? 0 : -1}
+            role={onSelectState ? 'button' : undefined}
+            aria-label={onSelectState ? state.name : undefined}
             className={onSelectState ? 'cursor-pointer' : undefined}
           >
             <rect
               width={CELL}
               height={CELL}
-              rx={4}
               fill={fill}
-              stroke={isSelected ? '#38bdf8' : '#0b1120'}
-              strokeWidth={isSelected ? 2.5 : 1.5}
+              stroke={isSelected || isHovered ? 'var(--paper)' : 'var(--rule)'}
+              strokeWidth={isSelected || isHovered ? 1.5 : 0.75}
             />
-            <text x={CELL / 2} y={subLabel ? CELL / 2 - 3 : CELL / 2 + 4} textAnchor="middle" className="fill-white text-[13px] font-semibold" style={{ fontFamily: 'inherit' }}>
+            <text x={CELL / 2} y={CELL / 2 + 4} textAnchor="middle" className="fill-paper font-mono text-[13px] font-medium">
               {state.id}
             </text>
-            {subLabel && (
-              <text x={CELL / 2} y={CELL / 2 + 13} textAnchor="middle" className="fill-white/80 text-[10px]" style={{ fontFamily: 'inherit' }}>
-                {subLabel}
-              </text>
-            )}
           </g>
         );
       })}
     </svg>
   );
-}
-
-/** Blue (Democratic-favoring) -> gray (even) -> red (Republican-favoring)
- * for a margin expressed as -100 (fully Dem) .. +100 (fully Rep). */
-export function marginColor(margin: number): string {
-  const clamped = Math.max(-100, Math.min(100, margin));
-  if (clamped >= 0) {
-    const t = clamped / 100;
-    return mix('#475569', '#dc2626', t);
-  }
-  const t = -clamped / 100;
-  return mix('#475569', '#2563eb', t);
-}
-
-/** Green (high approval) -> gray (50) -> red (low approval) for a 0..100 approval score. */
-export function approvalColor(approval: number): string {
-  const clamped = Math.max(0, Math.min(100, approval));
-  if (clamped >= 50) {
-    const t = (clamped - 50) / 50;
-    return mix('#475569', '#16a34a', t);
-  }
-  const t = (50 - clamped) / 50;
-  return mix('#475569', '#dc2626', t);
-}
-
-function mix(hexA: string, hexB: string, t: number): string {
-  const a = hexToRgb(hexA);
-  const b = hexToRgb(hexB);
-  const r = Math.round(a.r + (b.r - a.r) * t);
-  const g = Math.round(a.g + (b.g - a.g) * t);
-  const bl = Math.round(a.b + (b.b - a.b) * t);
-  return `rgb(${r}, ${g}, ${bl})`;
-}
-
-function hexToRgb(hex: string) {
-  const n = parseInt(hex.slice(1), 16);
-  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
-}
-
-export function partisanMargin(stateId: StateId): number {
-  return STATES[stateId].partisanBaseline;
 }

@@ -1,3 +1,45 @@
+@import './ui/theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    background: var(--ink-900);
+  }
+
+  body {
+    background: var(--ink-900);
+    color: var(--paper);
+    font-family: 'Public Sans', system-ui, sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Libre Caslon Display', Georgia, serif;
+    font-weight: 400;
+  }
+
+  /* Every number is IBM Plex Mono with tabular figures, so digits never reflow. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Visible focus on every interactive element — 2px brass, 2px offset. */
+  :focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+  }
+
+  /* Nothing loops, pulses, or floats ambiently, and every custom animation
+   * component (SigningFlourish, AnimatedNumber, ScreenFade) also checks this
+   * in JS for a correct final state — this is the CSS-level safety net. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

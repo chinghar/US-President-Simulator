@@ -9,9 +9,9 @@ interface AxisSliderProps {
 export function AxisSlider({ issue, value, onChange }: AxisSliderProps) {
   return (
     <div className="space-y-1">
-      <div className="flex items-baseline justify-between text-sm">
-        <span className="font-medium text-slate-200">{issue.name}</span>
-        <span className="tabular-nums text-slate-400">{value > 0 ? `+${value}` : value}</span>
+      <div className="flex items-baseline justify-between text-small">
+        <span className="font-medium text-paper">{issue.name}</span>
+        <span className="font-mono text-paper/60">{value > 0 ? `+${value}` : value}</span>
       </div>
       <input
         type="range"
@@ -20,10 +20,10 @@ export function AxisSlider({ issue, value, onChange }: AxisSliderProps) {
         step={5}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-sky-500"
+        className="w-full accent-[var(--seal)]"
         aria-label={issue.name}
       />
-      <div className="flex justify-between text-[11px] text-slate-500">
+      <div className="flex justify-between text-[11px] text-paper/40">
         <span>{issue.leftLabel}</span>
         <span>{issue.rightLabel}</span>
       </div>

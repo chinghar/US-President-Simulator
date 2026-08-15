@@ -16,11 +16,11 @@ export default function App() {
   const [saveMenuOpen, setSaveMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-navy-950 text-slate-200">
+    <div className="min-h-screen bg-ink-900 text-paper">
       <button
         type="button"
         onClick={() => setSaveMenuOpen(true)}
-        className="fixed right-4 top-4 z-40 rounded-md border border-navy-700 bg-navy-900/90 px-3 py-1.5 text-xs text-slate-300 shadow-lg hover:border-sky-500 hover:text-sky-300"
+        className="fixed right-3 top-3 z-40 border border-rule bg-ink-900 px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-paper/60 transition-colors duration-150 hover:border-brass hover:text-brass"
       >
         Save / Load
       </button>

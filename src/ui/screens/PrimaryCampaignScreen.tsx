@@ -7,6 +7,7 @@ import { ActionBuilder } from '../components/primary/ActionBuilder';
 import { ContestHistory } from '../components/primary/ContestHistory';
 import { DebatePanel } from '../components/primary/DebatePanel';
 import { DelegateTracker, PollPanel } from '../components/primary/Standings';
+import { Button, Eyebrow, Panel, Rule } from '../kit';
 
 const MONTH_NAMES = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -61,41 +62,40 @@ export function PrimaryCampaignScreen() {
     <div className="mx-auto max-w-6xl px-6 py-8">
       <header className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wide text-sky-400">Primary Campaign · {primary.party === 'democrat' ? 'Democratic' : 'Republican'} Primary</p>
-          <h1 className="text-2xl font-semibold text-slate-100">
+          <Eyebrow>Primary campaign · {primary.party === 'democrat' ? 'Democratic' : 'Republican'} primary</Eyebrow>
+          <h1 className="mt-1 font-display text-h1 text-paper">
             {MONTH_NAMES[game.date.month]} {game.date.year}
           </h1>
         </div>
-        <button type="button" onClick={resetGame} className="text-xs text-slate-500 hover:text-slate-300">
-          Start Over
-        </button>
+        <Button variant="ghost" onClick={resetGame}>
+          Start over
+        </Button>
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
         <div className="space-y-6">
           {statesInPlay.length > 0 ? (
-            <div className="rounded-lg border border-sky-500/40 bg-sky-500/5 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-sky-400">Voting This Month</p>
-              <p className="text-sm text-slate-200">
+            <div className="border-l-2 border-seal bg-ink-700 p-4">
+              <Eyebrow className="text-seal">Voting this month</Eyebrow>
+              <p className="mt-1 text-small text-paper/80">
                 {statesInPlay.length} state{statesInPlay.length > 1 ? 's' : ''} in play — spend your actions where they count.
               </p>
             </div>
           ) : nextBatch.length > 0 ? (
-            <div className="rounded-lg border border-navy-700 bg-navy-900/60 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Next Up</p>
-              <p className="text-sm text-slate-200">
+            <Panel title="Next up">
+              <p className="text-small text-paper/80">
                 {nextBatch.map((c) => c.name).join(', ')} — {MONTH_NAMES[nextBatch[0].month]} {nextBatch[0].year} (
                 {nextBatch.reduce((sum, c) => sum + c.states.length, 0)} state
                 {nextBatch.reduce((sum, c) => sum + c.states.length, 0) > 1 ? 's' : ''})
               </p>
-            </div>
+            </Panel>
           ) : null}
 
           {debate && debatePending && (
             <DebatePanel debate={debate} selectedAnswerId={debateAnswerId} onSelect={setDebateAnswerId} />
           )}
 
-          <div className="rounded-lg border border-navy-700 bg-navy-900/60 p-4">
+          <Panel>
             <ActionBuilder
               actions={queuedActions}
               onChange={setQueuedActions}
@@ -103,58 +103,48 @@ export function PrimaryCampaignScreen() {
               statesInPlay={statesInPlay}
               rivals={rivals}
             />
-          </div>
+          </Panel>
 
-          <button
-            type="button"
-            onClick={handleAdvance}
-            disabled={debatePending && !debateAnswerId}
-            className={[
-              'w-full rounded-md px-4 py-2.5 text-sm font-semibold transition-colors',
-              debatePending && !debateAnswerId
-                ? 'cursor-not-allowed bg-navy-700 text-slate-500'
-                : 'bg-sky-600 text-white hover:bg-sky-500',
-            ].join(' ')}
-          >
-            Advance to Next Month
-          </button>
+          <Button className="w-full" disabled={debatePending && !debateAnswerId} onClick={handleAdvance}>
+            Advance to next month
+          </Button>
 
           <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">Contest Results</h2>
+            <Eyebrow>Contest results</Eyebrow>
             <ContestHistory results={primary.contestsCompleted} candidates={primary.candidates} />
           </section>
         </div>
 
         <aside className="space-y-6">
-          <div className="rounded-lg border border-navy-700 bg-navy-900/60 p-4">
-            <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-400">Your Campaign</h3>
-            <dl className="space-y-1.5 text-sm">
+          <Panel title="Your campaign">
+            <dl className="space-y-1.5 text-small">
               <div className="flex justify-between">
-                <dt className="text-slate-500">War Chest</dt>
-                <dd className="tabular-nums text-slate-200">${(game.player.warChest / 1_000_000).toFixed(1)}M</dd>
+                <dt className="text-paper/50">War chest</dt>
+                <dd className="font-mono text-paper">${(game.player.warChest / 1_000_000).toFixed(1)}M</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Name Recognition</dt>
-                <dd className="tabular-nums text-slate-200">{game.player.nameRecognition.toFixed(0)}/100</dd>
+                <dt className="text-paper/50">Name recognition</dt>
+                <dd className="font-mono text-paper">{game.player.nameRecognition.toFixed(0)}/100</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Party Favor</dt>
-                <dd className="tabular-nums text-slate-200">{game.player.partyEstablishmentFavor.toFixed(0)}</dd>
+                <dt className="text-paper/50">Party favor</dt>
+                <dd className="font-mono text-paper">{game.player.partyEstablishmentFavor.toFixed(0)}</dd>
               </div>
+              <Rule />
               <div className="flex justify-between">
-                <dt className="text-slate-500">Authenticity</dt>
-                <dd className="tabular-nums text-slate-200">
+                <dt className="text-paper/50">Authenticity</dt>
+                <dd className="font-mono text-paper">
                   {primary.candidates.find((c) => c.isPlayer)?.authenticity.toFixed(0)}/100
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-500">Momentum</dt>
-                <dd className="tabular-nums text-slate-200">
+                <dt className="text-paper/50">Momentum</dt>
+                <dd className="font-mono text-paper">
                   {primary.candidates.find((c) => c.isPlayer)?.momentum.toFixed(0)}
                 </dd>
               </div>
             </dl>
-          </div>
+          </Panel>
 
           <PollPanel poll={latestPoll} candidates={primary.candidates} />
           <DelegateTracker candidates={primary.candidates} threshold={primary.nominationThreshold} />
