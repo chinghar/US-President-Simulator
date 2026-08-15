@@ -2,11 +2,18 @@ import { useState } from 'react';
 import { CustomCharacterForm } from './CustomCharacterForm';
 import { FigureGallery } from './FigureGallery';
 import { AmericanFlag, Eyebrow, PresidentialSeal } from '../kit';
+import type { StartMode } from '../state/gameStore';
 
 type Tab = 'figure' | 'custom';
 
+const MODE_COPY: Record<StartMode, string> = {
+  campaign: 'Contest the primary and the general election, month by month, before taking office.',
+  president: 'Skip the campaign entirely — take the oath on day one and start governing.',
+};
+
 export function CharacterCreationScreen() {
   const [tab, setTab] = useState<Tab>('figure');
+  const [mode, setMode] = useState<StartMode>('campaign');
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
@@ -19,6 +26,35 @@ export function CharacterCreationScreen() {
           <p className="mt-1 text-small text-paper/60">Choose a figure to run as, or build a candidate of your own.</p>
         </div>
       </header>
+
+      <div className="mb-8 border border-rule bg-ink-700 p-4">
+        <Eyebrow>Starting point</Eyebrow>
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex border border-rule">
+            <button
+              type="button"
+              onClick={() => setMode('campaign')}
+              className={[
+                'px-3 py-1.5 text-small transition-colors duration-150',
+                mode === 'campaign' ? 'bg-seal text-parchment' : 'text-paper/70 hover:text-paper',
+              ].join(' ')}
+            >
+              Full campaign
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('president')}
+              className={[
+                'border-l border-rule px-3 py-1.5 text-small transition-colors duration-150',
+                mode === 'president' ? 'bg-seal text-parchment' : 'text-paper/70 hover:text-paper',
+              ].join(' ')}
+            >
+              Start as president
+            </button>
+          </div>
+          <p className="text-[13px] text-paper/50 sm:max-w-sm sm:text-right">{MODE_COPY[mode]}</p>
+        </div>
+      </div>
 
       <div className="mb-8 flex gap-1 border-b border-rule">
         <button
@@ -43,7 +79,7 @@ export function CharacterCreationScreen() {
         </button>
       </div>
 
-      {tab === 'figure' ? <FigureGallery /> : <CustomCharacterForm />}
+      {tab === 'figure' ? <FigureGallery mode={mode} /> : <CustomCharacterForm mode={mode} />}
     </div>
   );
 }

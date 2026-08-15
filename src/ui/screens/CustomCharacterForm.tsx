@@ -12,7 +12,7 @@ import {
 import { ISSUE_LIST } from '../../data/issues';
 import { PRIOR_OFFICE_LIST } from '../../data/prior-offices';
 import { STATES } from '../../data/states';
-import { useGameStore } from '../state/gameStore';
+import { useGameStore, type StartMode } from '../state/gameStore';
 import { AxisSlider } from '../components/AxisSlider';
 import { TraitPicker } from '../components/TraitPicker';
 import { Button, Eyebrow } from '../kit';
@@ -35,7 +35,7 @@ function formatMoney(value: number): string {
 
 const INPUT_CLASS = 'w-full border border-rule bg-ink-900 px-3 py-2 text-paper outline-none focus-visible:border-brass';
 
-export function CustomCharacterForm() {
+export function CustomCharacterForm({ mode }: { mode: StartMode }) {
   const startCustomGame = useGameStore((s) => s.startCustomGame);
 
   const [name, setName] = useState('');
@@ -56,7 +56,7 @@ export function CustomCharacterForm() {
   }
 
   function handleLaunch() {
-    startCustomGame({ name: name.trim(), age, homeState, party, priorOffice, traits }, positions);
+    startCustomGame({ name: name.trim(), age, homeState, party, priorOffice, traits }, positions, mode);
   }
 
   return (
@@ -172,7 +172,7 @@ export function CustomCharacterForm() {
         </dl>
 
         <Button className="w-full" disabled={!canLaunch} onClick={handleLaunch}>
-          Launch campaign
+          {mode === 'president' ? 'Take office' : 'Launch campaign'}
         </Button>
         {!canLaunch && (
           <p className="text-[13px] text-paper/40">
