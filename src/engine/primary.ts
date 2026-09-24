@@ -314,7 +314,11 @@ export function computePoll(candidates: PrimaryCandidate[], party: Party, date: 
   for (const c of candidates) {
     const share = total > 0 ? (trueScores[c.id] / total) * 100 : 0;
     trueShare[c.id] = share;
-    reportedShare[c.id] = clamp(share + cursor.centered(BALANCE.primary.POLL_NOISE_MAGNITUDE), 0, 100);
+    const noisy = clamp(share + cursor.centered(BALANCE.primary.POLL_NOISE_MAGNITUDE), 0, 100);
+    // Dropped-out candidates have zero true support; still draw the noise
+    // above to keep the RNG sequence identical, but never report them above
+    // 0% — sampling noise shouldn't make an ex-candidate look "in the race".
+    reportedShare[c.id] = c.droppedOut ? 0 : noisy;
   }
 
   return { date, trueShare, reportedShare };
