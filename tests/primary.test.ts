@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advancePrimaryTurn, createCustomPlayer, createInitialGameState, PLAYER_CANDIDATE_ID } from '../src/engine';
+import { advancePrimaryTurn, computePoll, createCustomPlayer, createInitialGameState, PLAYER_CANDIDATE_ID, RngCursor } from '../src/engine';
 import { PRIMARY_CALENDAR } from '../src/data/primary-calendar';
 import type { PrimaryActionType, StateId } from '../src/engine/types';
 
@@ -120,6 +120,43 @@ describe('polling', () => {
     const poll = state.primary!.polls[0];
     const diffs = Object.keys(poll.trueShare).map((id) => Math.abs(poll.trueShare[id] - poll.reportedShare[id]));
     expect(diffs.some((d) => d > 0.01)).toBe(true);
+  });
+
+  it('a dropped-out candidate always reports 0% (sampling noise must not resurrect them)', () => {
+    const positions = neutralPositions();
+    const candidates = [
+      {
+        id: PLAYER_CANDIDATE_ID,
+        name: 'Player',
+        isPlayer: true,
+        positions,
+        traits: [],
+        nameRecognition: 60,
+        warChest: 1_000_000,
+        delegates: 0,
+        momentum: 0,
+        authenticity: 100,
+        droppedOut: false,
+      },
+      {
+        id: 'rival',
+        name: 'Rival',
+        isPlayer: false,
+        positions,
+        traits: [],
+        nameRecognition: 60,
+        warChest: 1_000_000,
+        delegates: 0,
+        momentum: 0,
+        authenticity: 100,
+        droppedOut: true,
+      },
+    ];
+    // Try several seeds so a single lucky draw can't mask the bug.
+    for (let seed = 1; seed <= 20; seed++) {
+      const poll = computePoll(candidates, 'democrat', { month: 1, year: 2028 }, new RngCursor(seed));
+      expect(poll.reportedShare.rival).toBe(0);
+    }
   });
 });
 
