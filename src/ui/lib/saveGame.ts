@@ -68,7 +68,11 @@ export function exportGameAsJson(game: GameState): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `usa-presidential-simulator-${game.player.name.replace(/\s+/g, '_')}-${game.date.year}-${game.date.month}.json`;
+  // Strip anything but alphanumerics/underscore/hyphen — a name with a "/",
+  // "\", or other path-ish character would otherwise corrupt the downloaded
+  // filename (or be read as a directory separator) on some platforms.
+  const safeName = game.player.name.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '') || 'candidate';
+  a.download = `usa-presidential-simulator-${safeName}-${game.date.year}-${game.date.month}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
