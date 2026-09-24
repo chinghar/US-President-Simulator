@@ -177,7 +177,8 @@ export function CustomCharacterForm({ mode }: { mode: StartMode }) {
         {!canLaunch && (
           <p className="text-[13px] text-paper/40">
             {name.trim().length === 0 ? 'Enter a name. ' : ''}
-            {traits.length !== 3 ? `Select exactly 3 traits (${traits.length}/3 selected).` : ''}
+            {traits.length !== 3 ? `Select exactly 3 traits (${traits.length}/3 selected). ` : ''}
+            {!(age >= 35 && age <= 90) ? 'Age must be between 35 (the constitutional minimum) and 90.' : ''}
           </p>
         )}
       </aside>
